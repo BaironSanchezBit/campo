@@ -1,0 +1,400 @@
+<nav class="bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700">
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <img src="../assets/img/logo.ico" class="h-12" alt="Flowbite Logo" />
+            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white bebas-neue-regular">
+                Arriba el Campo
+            </span>
+        </a>
+        <button data-collapse-toggle="navbar-dropdown" type="button"
+            class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+            aria-controls="navbar-dropdown" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M1 1h15M1 7h15M1 13h15" />
+            </svg>
+        </button>
+        <div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
+            <ul
+                class="flex flex-col items-center font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                <li>
+                    <a href="#"
+                        class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent"
+                        aria-current="page">
+                        Inicio
+                    </a>
+                </li>
+                <li>
+                    <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar"
+                        class="flex items-center justify-between w-full py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
+                        Categorías
+                        <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 4 4 4-4" />
+                        </svg>
+                    </button>
+                    <!-- Dropdown menu -->
+                    <div id="dropdownNavbar"
+                        class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos Frescos</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Lácteos y Huevos</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Carnes y Aves</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Granos y Cereales</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Legumbres</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Hierbas y Especias</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Bebidas</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos de Panadería</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos Procesados y Empaquetados</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos Artesanales</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Alternativas Lácteas</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos Naturales y Orgánicos</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos de Temporada</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="#"
+                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Mercado</a>
+                </li>
+                <li>
+                    <a href="#"
+                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Pricing</a>
+                </li>
+                <li>
+                    <a href="#"
+                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Contact</a>
+                </li>
+                <ng-container *ngIf="!isLoggedIn">
+                    <li>
+                        <button type="button" (click)="toggleAuthModal(false)"
+                            class="text-white bg-gray-700 hover:bg-gray-800 mr-2 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                            Iniciar Sesión
+                        </button>
+                    </li>
+                    <li class="empezar">
+                        <button type="button" (click)="toggleAuthModal(true)"
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            Empezar
+                        </button>
+                    </li>
+                </ng-container>
+                <ng-container *ngIf="isLoggedIn">
+                    <li>
+                        <button id="dropdownAvatarNameButton" data-dropdown-toggle="dropdownAvatarName"
+                            class="flex items-center text-sm pe-1 font-medium text-gray-900 rounded-full hover:text-blue-600 dark:hover:text-blue-500 md:me-0 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-white"
+                            type="button">
+                            <span class="sr-only">Open user menu</span>
+                            <img class="w-8 h-8 me-2 rounded-full"
+                                [src]="usuario?.fotoPerfil ? usuario.fotoPerfil : '/assets/img/user.png'"
+                                alt="user photo">
+                            {{ usuario?.nombres }} {{ usuario?.apellidos }}
+                            <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 10 6">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m1 1 4 4 4-4" />
+                            </svg>
+                        </button>
+                    </li>
+
+                    <!-- Dropdown menú -->
+                    <div id="dropdownAvatarName"
+                        class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                        <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                            <div class="font-medium" *ngIf="usuario?.rol === 'comprador'">Comprador</div>
+                            <div class="font-medium" *ngIf="usuario?.rol === 'vendedor'">Vendedor</div>
+                            <div class="truncate">{{ usuario?.correo }}</div>
+                        </div>
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                            <li><a href="#" class="block px-4 py-2">Dashboard</a></li>
+                            <li><a href="/perfil" class="block px-4 py-2">Perfil</a></li>
+                            <li><a href="#" class="block px-4 py-2">Earnings</a></li>
+                        </ul>
+                        <div class="py-2">
+                            <a href="#" (click)="cerrarSesion()" class="block px-4 py-2">Cerrar sesión</a>
+                        </div>
+                    </div>
+                </ng-container>
+                <li>
+                    <button type="button" (click)="toggleCart()"
+                        class="relative inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <div
+                            class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">
+                            8</div>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div *ngIf="isAuthModalOpen" class="modal-bg">
+    <div class="modal-content">
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                    {{ isRegistering ? 'Registrar cuenta' : 'Iniciar Sesión' }}
+                </h3>
+                <button type="button"
+                    class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                    (click)="toggleAuthModal()">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <div class="p-4 md:p-5">
+                <form *ngIf="!isRegistering" (ngSubmit)="onIniciarSesion()" class="space-y-4">
+                    <!-- Formulario de inicio de sesión -->
+                    <div>
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Correo
+                            electrónico:</label>
+                        <input type="email" name="email" id="email" [(ngModel)]="login.correo"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            placeholder="nombre@ejemplo.com" required />
+                    </div>
+                    <div>
+                        <label for="password"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Contraseña:</label>
+                        <input type="password" name="password" id="password" placeholder="••••••••"
+                            [(ngModel)]="login.contrasena"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            required />
+                    </div>
+                    <div class="flex justify-between">
+                        <a href="#" class="text-sm text-blue-700 hover:underline dark:text-blue-500">Olvidaste tu
+                            contraseña?</a>
+                    </div>
+                    <button type="submit"
+                        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Inicie
+                        sesión en su cuenta</button>
+                    <div class="text-sm font-medium text-gray-500 dark:text-gray-300">
+                        ¿No tienes cuenta? <a href="#" (click)="toggleRegistering()"
+                            class="text-blue-700 hover:underline dark:text-blue-500">Crear cuenta</a>
+                    </div>
+                </form>
+
+                <form *ngIf="isRegistering" (ngSubmit)="onRegistrarse()" class="space-y-4">
+                    <!-- Formulario de registro -->
+                    <div>
+                        <label for="nombres"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombres:</label>
+                        <input type="text" name="nombres" id="nombres" [(ngModel)]="register.nombres"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            required />
+                    </div>
+                    <div>
+                        <label for="apellidos"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apellidos:</label>
+                        <input type="text" name="apellidos" id="apellidos" [(ngModel)]="register.apellidos"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            required />
+                    </div>
+                    <div>
+                        <label for="correo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Correo
+                            electrónico:</label>
+                        <input type="email" name="correo" id="correo" [(ngModel)]="register.correo"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            required />
+                    </div>
+                    <div>
+                        <label for="password"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Contraseña:</label>
+                        <input type="password" name="password" id="password" [(ngModel)]="register.contrasena"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            required />
+                    </div>
+                    <div>
+                        <label for="celular"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Celular:</label>
+                        <input type="text" name="celular" id="celular" [(ngModel)]="register.celular"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            required />
+                    </div>
+                    <div>
+                        <label for="rol"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Rol:</label>
+                        <select name="rol" id="rol" [(ngModel)]="register.rol"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                            <option value="comprador">Comprador</option>
+                            <option value="vendedor">Vendedor</option>
+                        </select>
+                    </div>
+                    <button type="submit"
+                        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Crear
+                        cuenta</button>
+                    <div class="text-sm font-medium text-gray-500 dark:text-gray-300">
+                        ¿Ya tienes cuenta? <a href="#" (click)="toggleRegistering()"
+                            class="text-blue-700 hover:underline dark:text-blue-500">Iniciar sesión</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="relative z-10" *ngIf="isCartOpen" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+    <div class="fixed inset-0 overflow-hidden">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+                <div class="pointer-events-auto w-screen max-w-md">
+                    <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
+                        <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+                            <div class="flex items-start justify-between">
+                                <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">Shopping cart</h2>
+                                <div class="ml-3 flex h-7 items-center">
+                                    <button (click)="toggleCart()" type="button"
+                                        class="relative -m-2 p-2 text-gray-400 hover:text-gray-500">
+                                        <span class="absolute -inset-0.5"></span>
+                                        <span class="sr-only">Close panel</span>
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                            stroke="currentColor" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mt-8">
+                                <div class="flow-root">
+                                    <ul role="list" class="-my-6 divide-y divide-gray-200">
+                                        <li class="flex py-6">
+                                            <div
+                                                class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                                <img src="https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg"
+                                                    alt="Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt."
+                                                    class="h-full w-full object-cover object-center">
+                                            </div>
+
+                                            <div class="ml-4 flex flex-1 flex-col">
+                                                <div>
+                                                    <div
+                                                        class="flex justify-between text-base font-medium text-gray-900">
+                                                        <h3>
+                                                            <a href="#">Throwback Hip Bag</a>
+                                                        </h3>
+                                                        <p class="ml-4">$90.00</p>
+                                                    </div>
+                                                    <p class="mt-1 text-sm text-gray-500">Salmon</p>
+                                                </div>
+                                                <div class="flex flex-1 items-end justify-between text-sm">
+                                                    <p class="text-gray-500">Qty 1</p>
+
+                                                    <div class="flex">
+                                                        <button type="button"
+                                                            class="font-medium text-indigo-600 hover:text-indigo-500">Remove</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="flex py-6">
+                                            <div
+                                                class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                                <img src="https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg"
+                                                    alt="Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch."
+                                                    class="h-full w-full object-cover object-center">
+                                            </div>
+
+                                            <div class="ml-4 flex flex-1 flex-col">
+                                                <div>
+                                                    <div
+                                                        class="flex justify-between text-base font-medium text-gray-900">
+                                                        <h3>
+                                                            <a href="#">Medium Stuff Satchel</a>
+                                                        </h3>
+                                                        <p class="ml-4">$32.00</p>
+                                                    </div>
+                                                    <p class="mt-1 text-sm text-gray-500">Blue</p>
+                                                </div>
+                                                <div class="flex flex-1 items-end justify-between text-sm">
+                                                    <p class="text-gray-500">Qty 1</p>
+
+                                                    <div class="flex">
+                                                        <button type="button"
+                                                            class="font-medium text-indigo-600 hover:text-indigo-500">Remove</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <!-- More products... -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
+                            <div class="flex justify-between text-base font-medium text-gray-900">
+                                <p>Subtotal</p>
+                                <p>$262.00</p>
+                            </div>
+                            <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
+                            <div class="mt-6">
+                                <a href="#"
+                                    class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700">Checkout</a>
+                            </div>
+                            <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
+                                <p>
+                                    or
+                                    <button type="button" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                        Continue Shopping
+                                        <span aria-hidden="true"> &rarr;</span>
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
