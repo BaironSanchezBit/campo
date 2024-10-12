@@ -43,7 +43,7 @@ exports.iniciarSesion = async (req, res) => {
         // Verificar la contraseña
         const esContraseñaValida = await usuario.compararContraseña(contraseña);
         if (!esContraseñaValida) {
-            return res.status(400).json({ msg: 'Contraseña incorrecta' });
+            return res.status(400).json({ msg: 'Contraseña o correo electrónico incorrecto' });
         }
 
         // Generar token de autenticación

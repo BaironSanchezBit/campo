@@ -1,0 +1,42 @@
+.photo-flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    /* Espacio entre las imágenes */
+}
+
+.photo-flex-container .photo-container {
+    position: relative;
+    margin: 5px;
+    /* Ajusta este valor para controlar el espaciado entre las imágenes */
+}
+
+.photo-flex-container img {
+    width: 100px;
+    /* Ajusta el tamaño de las imágenes */
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.photo-flex-container button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.photo-flex-container button svg {
+    width: 12px;
+    height: 12px;
+}

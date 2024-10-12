@@ -19,13 +19,13 @@
             <ul
                 class="flex flex-col items-center font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                 <li>
-                    <a href="#"
-                        class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent"
+                    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                         aria-current="page">
                         Inicio
                     </a>
                 </li>
-                <li>
+                <li *ngIf="usuario?.rol === 'comprador'">
                     <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar"
                         class="flex items-center justify-between w-full py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
                         Categorías
@@ -41,19 +41,23 @@
                         <ul class="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
                             <li>
                                 <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos Frescos</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos
+                                    Frescos</a>
                             </li>
                             <li>
                                 <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Lácteos y Huevos</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Lácteos
+                                    y Huevos</a>
                             </li>
                             <li>
                                 <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Carnes y Aves</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Carnes
+                                    y Aves</a>
                             </li>
                             <li>
                                 <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Granos y Cereales</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Granos
+                                    y Cereales</a>
                             </li>
                             <li>
                                 <a href="#"
@@ -61,7 +65,8 @@
                             </li>
                             <li>
                                 <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Hierbas y Especias</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Hierbas
+                                    y Especias</a>
                             </li>
                             <li>
                                 <a href="#"
@@ -69,42 +74,50 @@
                             </li>
                             <li>
                                 <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos de Panadería</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos
+                                    de Panadería</a>
                             </li>
                             <li>
                                 <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos Procesados y Empaquetados</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos
+                                    Procesados y Empaquetados</a>
                             </li>
                             <li>
                                 <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos Artesanales</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos
+                                    Artesanales</a>
                             </li>
                             <li>
                                 <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Alternativas Lácteas</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Alternativas
+                                    Lácteas</a>
                             </li>
                             <li>
                                 <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos Naturales y Orgánicos</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos
+                                    Naturales y Orgánicos</a>
                             </li>
                             <li>
                                 <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos de Temporada</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos
+                                    de Temporada</a>
                             </li>
                         </ul>
                     </div>
                 </li>
-                <li>
-                    <a href="#"
-                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Mercado</a>
+                <li *ngIf="usuario?.rol === 'comprador' || !isLoggedIn">
+                    <a routerLink="/mercado" routerLinkActive="active"
+                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
+                        Mercado
+                    </a>
                 </li>
-                <li>
-                    <a href="#"
-                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Pricing</a>
+                <li *ngIf="usuario?.rol === 'vendedor'">
+                    <a routerLink="/publicar" routerLinkActive="active"
+                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Publicar</a>
                 </li>
-                <li>
+                <li *ngIf="usuario?.rol === 'vendedor'">
                     <a href="#"
-                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Contact</a>
+                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Ver publicaciones</a>
                 </li>
                 <ng-container *ngIf="!isLoggedIn">
                     <li>
@@ -121,8 +134,8 @@
                     </li>
                 </ng-container>
                 <ng-container *ngIf="isLoggedIn">
-                    <li>
-                        <button id="dropdownAvatarNameButton" data-dropdown-toggle="dropdownAvatarName"
+                    <li class="relative">
+                        <button id="dropdownAvatarNameButton" (click)="toggleDropdown()"
                             class="flex items-center text-sm pe-1 font-medium text-gray-900 rounded-full hover:text-blue-600 dark:hover:text-blue-500 md:me-0 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-white"
                             type="button">
                             <span class="sr-only">Open user menu</span>
@@ -136,27 +149,27 @@
                                     stroke-width="2" d="m1 1 4 4 4-4" />
                             </svg>
                         </button>
-                    </li>
 
-                    <!-- Dropdown menú -->
-                    <div id="dropdownAvatarName"
-                        class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-                        <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
-                            <div class="font-medium" *ngIf="usuario?.rol === 'comprador'">Comprador</div>
-                            <div class="font-medium" *ngIf="usuario?.rol === 'vendedor'">Vendedor</div>
-                            <div class="truncate">{{ usuario?.correo }}</div>
+                        <!-- Dropdown menú -->
+                        <div *ngIf="isDropdownOpen" id="dropdownAvatarName"
+                            class="absolute right-0 mt-2 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                            <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                                <div class="font-medium" *ngIf="usuario?.rol === 'comprador'">Comprador</div>
+                                <div class="font-medium" *ngIf="usuario?.rol === 'vendedor'">Vendedor</div>
+                                <div class="truncate">{{ usuario?.correo }}</div>
+                            </div>
+                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                <li><a href="#" class="block px-4 py-2">Dashboard</a></li>
+                                <li><a href="/perfil" class="block px-4 py-2">Perfil</a></li>
+                                <li><a href="#" class="block px-4 py-2">Earnings</a></li>
+                            </ul>
+                            <div class="py-2">
+                                <a href="#" (click)="cerrarSesion()" class="block px-4 py-2">Cerrar sesión</a>
+                            </div>
                         </div>
-                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-                            <li><a href="#" class="block px-4 py-2">Dashboard</a></li>
-                            <li><a href="/perfil" class="block px-4 py-2">Perfil</a></li>
-                            <li><a href="#" class="block px-4 py-2">Earnings</a></li>
-                        </ul>
-                        <div class="py-2">
-                            <a href="#" (click)="cerrarSesion()" class="block px-4 py-2">Cerrar sesión</a>
-                        </div>
-                    </div>
+                    </li>
                 </ng-container>
-                <li>
+                <li *ngIf="usuario?.rol === 'comprador'">
                     <button type="button" (click)="toggleCart()"
                         class="relative inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         <i class="fa-solid fa-cart-shopping"></i>
@@ -195,21 +208,23 @@
                     <div>
                         <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Correo
                             electrónico:</label>
-                        <input type="email" name="email" id="email" [(ngModel)]="login.correo"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                            placeholder="nombre@ejemplo.com" required />
+                        <input type="email" name="email" id="email" [(ngModel)]="login.correo" required
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            placeholder="nombre@ejemplo.com" />
                     </div>
                     <div>
                         <label for="password"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Contraseña:</label>
-                        <input type="password" name="password" id="password" placeholder="••••••••"
-                            [(ngModel)]="login.contrasena"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                            required />
+                        <input type="password" name="password" id="password" [(ngModel)]="login.contrasena" required
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            placeholder="••••••••" />
                     </div>
                     <div class="flex justify-between">
                         <a href="#" class="text-sm text-blue-700 hover:underline dark:text-blue-500">Olvidaste tu
                             contraseña?</a>
+                    </div>
+                    <div *ngIf="errorMessage" class="errorMessage">
+                        {{ errorMessage }}
                     </div>
                     <button type="submit"
                         class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Inicie
@@ -250,21 +265,75 @@
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                             required />
                     </div>
-                    <div>
-                        <label for="celular"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Celular:</label>
-                        <input type="text" name="celular" id="celular" [(ngModel)]="register.celular"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                            required />
+                    <div class="flex items-center">
+                        <button id="dropdown-phone-button" data-dropdown-toggle="dropdown-phone"
+                            class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg cursor-default"
+                            type="button">
+                            <svg class="w-4 h-4 me-2" fill="none" viewBox="0 0 20 15">
+                                <rect width="20" height="15" y=".5" fill="#fff" rx="2" />
+                                <mask id="a" style="mask-type:luminance" width="20" height="15" x="0" y="0"
+                                    maskUnits="userSpaceOnUse">
+                                    <rect width="20" height="15" y=".5" fill="#fff" rx="2" />
+                                </mask>
+                                <g mask="url(#a)">
+                                    <path fill="#FFCD00" fill-rule="evenodd" d="M0 5.167h19.6V.5H0v4.667z"
+                                        clip-rule="evenodd" />
+                                    <g filter="url(#filter0_d_374_135180)">
+                                        <path fill="#003087" fill-rule="evenodd" d="M0 9.833h19.6V5.167H0v4.666z"
+                                            clip-rule="evenodd" />
+                                    </g>
+                                    <g filter="url(#filter1_d_374_135180)">
+                                        <path fill="#C8102E" fill-rule="evenodd" d="M0 14.5h19.6V9.833H0V14.5z"
+                                            clip-rule="evenodd" />
+                                    </g>
+                                </g>
+                                <defs>
+                                    <filter id="filter0_d_374_135180" width="19.6" height="4.667" x="0" y="5.167"
+                                        color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+                                        <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                                        <feColorMatrix in="SourceAlpha" result="hardAlpha"
+                                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
+                                        <feOffset />
+                                        <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0" />
+                                        <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_374_135180" />
+                                        <feBlend in="SourceGraphic" in2="effect1_dropShadow_374_135180"
+                                            result="shape" />
+                                    </filter>
+                                    <filter id="filter1_d_374_135180" width="19.6" height="4.667" x="0" y="9.833"
+                                        color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+                                        <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                                        <feColorMatrix in="SourceAlpha" result="hardAlpha"
+                                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
+                                        <feOffset />
+                                        <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0" />
+                                        <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_374_135180" />
+                                        <feBlend in="SourceGraphic" in2="effect1_dropShadow_374_135180"
+                                            result="shape" />
+                                    </filter>
+                                </defs>
+                            </svg>
+                            +57
+                        </button>
+                        <label for="phone-input"
+                            class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Celular:</label>
+                        <div class="relative w-full">
+                            <input type="text" id="phone-input" name="celular" [(ngModel)]="register.celular"
+                                maxlength="10"
+                                class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-0 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+                                required (keypress)="validateKeypress($event)" />
+                        </div>
                     </div>
                     <div>
-                        <label for="rol"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Rol:</label>
+                        <label for="rol" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">¿Qué
+                            quieres ser?</label>
                         <select name="rol" id="rol" [(ngModel)]="register.rol"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
                             <option value="comprador">Comprador</option>
                             <option value="vendedor">Vendedor</option>
                         </select>
+                    </div>
+                    <div *ngIf="errorMessage" class="errorMessage">
+                        {{ errorMessage }}
                     </div>
                     <button type="submit"
                         class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Crear
