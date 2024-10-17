@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { CartService } from '../../services/cart.service';
 
 declare var initDropdowns: any;  // Si usas una biblioteca externa como Flowbite, declárala
 
@@ -25,20 +26,22 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   login = { correo: '', contrasena: '' };
   register = { nombres: '', apellidos: '', correo: '', contrasena: '', celular: '', rol: 'comprador' };
   usuario: any = null;
+  productosCarrito: any[] = [];
+  private intentarPagar: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router, private cartService: CartService) { }
 
   ngOnInit() {
     const usuarioGuardado = localStorage.getItem('usuario');
     if (usuarioGuardado) {
       this.usuario = JSON.parse(usuarioGuardado);
-      console.log('Usuario recuperado de localStorage:', this.usuario); // <-- Verificar la información del usuario
       this.isLoggedIn = true;
     } else {
       this.isLoggedIn = false;
     }
+    this.productosCarrito = this.cartService.getItems();
   }
-  
+
   ngAfterViewInit() {
     if (typeof initDropdowns === 'function') {
       initDropdowns();  // Asegúrate de reemplazar esto con la función que inicializa tus dropdowns
@@ -47,6 +50,52 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   toggleCart() {
     this.isCartOpen = !this.isCartOpen;
+  }
+
+  pagar() {
+    if (this.isLoggedIn) {
+      this.router.navigate(['/pasarela-pago']);  // Cambia '/pago' a la ruta de tu pasarela de pago
+    } else {
+      this.intentarPagar = true;
+      this.toggleAuthModal();
+    }
+  }
+
+  incrementQuantity(index: number) {
+    const producto = this.productosCarrito[index];
+    if (producto.cantidad < 10) {  // Establece un máximo si es necesario
+      producto.cantidad++;
+      this.updateCart();
+    }
+  }
+
+  decrementQuantity(index: number) {
+    const producto = this.productosCarrito[index];
+    if (producto.cantidad > 1) {  // No permitir que la cantidad sea menor a 1
+      producto.cantidad--;
+      this.updateCart();
+    }
+  }
+
+  removeFromCart(index: number) {
+    this.cartService.removeFromCart(index);
+    this.productosCarrito = this.cartService.getItems();
+  }
+
+  getCartTotal() {
+    return this.transform(this.productosCarrito.reduce((total, producto) => total + producto.precio * producto.cantidad, 0));
+  }
+
+  updateCart() {
+    this.cartService.updateCart(this.productosCarrito);  // Guarda el carrito actualizado en localStorage
+  }
+
+  getFotoUrl(foto: string): string {
+    return `http://localhost:4000/uploads/${foto}`;
+  }
+
+  transform(value: number): string {
+    return `$${value.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   }
 
   toggleAuthModal(isRegistering: boolean = false) {
@@ -71,12 +120,18 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         const usuario = response.user;
         this.authService.guardarToken(token);
         this.authService.guardarUsuarioEnLocalStorage(usuario);
-        console.log('Usuario guardado en localStorage:', usuario);
         this.usuario = usuario;
         this.isLoggedIn = true;
         this.isDropdownOpen = false;
         this.toggleAuthModal();
-        this.router.navigate(['/']);
+
+        // Redirigir a la pasarela de pago si el usuario intentaba pagar
+        if (this.intentarPagar) {
+          this.router.navigate(['/pasarela-pago']);  // Cambia '/pago' a tu pasarela de pago
+          this.intentarPagar = false;  // Restablecer la intención después de redirigir
+        } else {
+          this.router.navigate(['/']);  // Redirigir a la página principal o donde desees
+        }
       },
       (error) => {
         console.error('Error al iniciar sesión', error);
@@ -85,9 +140,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     );
   }
 
-
   onRegistrarse() {
-    console.log('Datos de registro antes de enviar:', this.register); // Para verificar los datos que se están enviando
     this.authService.registrarUsuario(this.register).subscribe(
       (response) => {
         const token = response.token;

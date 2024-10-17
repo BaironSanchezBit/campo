@@ -25,7 +25,7 @@
                         Inicio
                     </a>
                 </li>
-                <li *ngIf="usuario?.rol === 'comprador'">
+                <li *ngIf="usuario?.rol === 'comprador' || !isLoggedIn">
                     <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar"
                         class="flex items-center justify-between w-full py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
                         Categorías
@@ -116,8 +116,9 @@
                         class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Publicar</a>
                 </li>
                 <li *ngIf="usuario?.rol === 'vendedor'">
-                    <a href="#"
-                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Ver publicaciones</a>
+                    <a routerLink="/mis-publicaciones" routerLinkActive="active"
+                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Ver
+                        publicaciones</a>
                 </li>
                 <ng-container *ngIf="!isLoggedIn">
                     <li>
@@ -169,13 +170,13 @@
                         </div>
                     </li>
                 </ng-container>
-                <li *ngIf="usuario?.rol === 'comprador'">
+                <li *ngIf="usuario?.rol === 'comprador' || !isLoggedIn">
                     <button type="button" (click)="toggleCart()"
                         class="relative inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         <i class="fa-solid fa-cart-shopping"></i>
                         <div
                             class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">
-                            8</div>
+                            {{productosCarrito.length}}</div>
                     </button>
                 </li>
             </ul>
@@ -358,11 +359,10 @@
                     <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                         <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                             <div class="flex items-start justify-between">
-                                <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">Shopping cart</h2>
+                                <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">Carro de compras</h2>
                                 <div class="ml-3 flex h-7 items-center">
                                     <button (click)="toggleCart()" type="button"
                                         class="relative -m-2 p-2 text-gray-400 hover:text-gray-500">
-                                        <span class="absolute -inset-0.5"></span>
                                         <span class="sr-only">Close panel</span>
                                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                             stroke="currentColor" aria-hidden="true">
@@ -376,11 +376,11 @@
                             <div class="mt-8">
                                 <div class="flow-root">
                                     <ul role="list" class="-my-6 divide-y divide-gray-200">
-                                        <li class="flex py-6">
+                                        <!-- Iterar sobre productos del carrito -->
+                                        <li *ngFor="let producto of productosCarrito; let i = index" class="flex py-6">
                                             <div
                                                 class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                <img src="https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg"
-                                                    alt="Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt."
+                                                <img [src]="getFotoUrl(producto.fotos[0])" alt="{{ producto.titulo }}"
                                                     class="h-full w-full object-cover object-center">
                                             </div>
 
@@ -388,54 +388,28 @@
                                                 <div>
                                                     <div
                                                         class="flex justify-between text-base font-medium text-gray-900">
-                                                        <h3>
-                                                            <a href="#">Throwback Hip Bag</a>
-                                                        </h3>
-                                                        <p class="ml-4">$90.00</p>
+                                                        <h3>{{ producto.titulo }}</h3>
+                                                        <p class="ml-4">{{ transform(producto.precio) }}</p>
                                                     </div>
-                                                    <p class="mt-1 text-sm text-gray-500">Salmon</p>
+                                                    <p class="mt-1 text-sm text-gray-500">{{ producto.descripcion }}</p>
                                                 </div>
-                                                <div class="flex flex-1 items-end justify-between text-sm">
-                                                    <p class="text-gray-500">Qty 1</p>
 
-                                                    <div class="flex">
-                                                        <button type="button"
-                                                            class="font-medium text-indigo-600 hover:text-indigo-500">Remove</button>
-                                                    </div>
+                                                <!-- Incremento/decremento de cantidad -->
+                                                <div class="flex items-center mt-4">
+                                                    <button (click)="decrementQuantity(i)"
+                                                        class="bg-gray-100 border border-gray-300 p-2 rounded-l-lg">-</button>
+                                                    <input type="text" class="w-12 text-center border border-gray-300"
+                                                        [(ngModel)]="producto.cantidad" [value]="producto.cantidad">
+                                                    <button (click)="incrementQuantity(i)"
+                                                        class="bg-gray-100 border border-gray-300 p-2 rounded-r-lg">+</button>
                                                 </div>
-                                            </div>
-                                        </li>
-                                        <li class="flex py-6">
-                                            <div
-                                                class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                <img src="https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg"
-                                                    alt="Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch."
-                                                    class="h-full w-full object-cover object-center">
-                                            </div>
 
-                                            <div class="ml-4 flex flex-1 flex-col">
-                                                <div>
-                                                    <div
-                                                        class="flex justify-between text-base font-medium text-gray-900">
-                                                        <h3>
-                                                            <a href="#">Medium Stuff Satchel</a>
-                                                        </h3>
-                                                        <p class="ml-4">$32.00</p>
-                                                    </div>
-                                                    <p class="mt-1 text-sm text-gray-500">Blue</p>
-                                                </div>
-                                                <div class="flex flex-1 items-end justify-between text-sm">
-                                                    <p class="text-gray-500">Qty 1</p>
-
-                                                    <div class="flex">
-                                                        <button type="button"
-                                                            class="font-medium text-indigo-600 hover:text-indigo-500">Remove</button>
-                                                    </div>
+                                                <div class="flex flex-1 items-end justify-between text-sm mt-2">
+                                                    <button (click)="removeFromCart(i)" type="button"
+                                                        class="font-medium text-indigo-600 hover:text-indigo-500">Eliminar</button>
                                                 </div>
                                             </div>
                                         </li>
-
-                                        <!-- More products... -->
                                     </ul>
                                 </div>
                             </div>
@@ -443,19 +417,20 @@
 
                         <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
                             <div class="flex justify-between text-base font-medium text-gray-900">
-                                <p>Subtotal</p>
-                                <p>$262.00</p>
+                                <p>Total</p>
+                                <p>{{ getCartTotal() }}</p>
                             </div>
-                            <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
+                            <p class="mt-0.5 text-sm text-gray-500">Los gastos de envío e impuestos se calculan al
+                                finalizar la compra.</p>
                             <div class="mt-6">
-                                <a href="#"
-                                    class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700">Checkout</a>
+                                <button type="button" (click)="pagar()"
+                                    class="w-full flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700">Pagar</button>
                             </div>
                             <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
                                 <p>
-                                    or
+                                    o
                                     <button type="button" class="font-medium text-indigo-600 hover:text-indigo-500">
-                                        Continue Shopping
+                                        Continuar Comprando
                                         <span aria-hidden="true"> &rarr;</span>
                                     </button>
                                 </p>
