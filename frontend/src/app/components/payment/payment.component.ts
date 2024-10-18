@@ -25,6 +25,12 @@ export class PaymentComponent implements OnInit {
   usuario: any = null;
   paymentStatus: string = '';
 
+  // Nuevos campos de envío
+  direccionEnvio: string = '';
+  personaRecibe: string = '';
+  numeroCelular: string = '';
+  ciudad: string = '';
+
   constructor(private router: Router, private cartService: CartService, private http: HttpClient) {
     this.loadCartItems();
   }
@@ -53,29 +59,58 @@ export class PaymentComponent implements OnInit {
     return `$${value.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   }
 
+  isFormComplete(): boolean {
+    return this.cardNumber !== '' &&
+      this.expiryDate !== '' &&
+      this.cvv !== '' &&
+      this.name !== '' &&
+      this.email !== '' &&
+      this.direccionEnvio !== '' &&
+      this.personaRecibe !== '' &&
+      this.numeroCelular !== '' &&
+      this.ciudad !== '';
+  }
+
   sendConfirmationEmail() {
     this.paymentStatus = 'Creando pedido...';  // Actualizar estado antes de la solicitud
 
     const emailPayload = {
       email: this.email,
-      productos: this.items,
+      productos: this.items.map(item => ({
+        _id: item._id,
+        cantidad: item.cantidad,
+        precio: item.precio,
+        vendedorId: item.vendedorId
+      })),
       total: this.total,
-      usuarioId: this.usuario._id
+      usuarioId: this.usuario._id,
+      direccionEnvio: this.direccionEnvio,
+      personaRecibe: this.personaRecibe,
+      numeroCelular: this.numeroCelular,
+      ciudad: this.ciudad
     };
 
     this.http.post('http://localhost:4000/api/pagos/procesar-pago', emailPayload)
       .subscribe(
         response => {
-          console.log('Correos enviados correctamente', response);
+          console.log('Pedido creado y correos enviados correctamente', response);
           this.paymentStatus = 'Pedido creado y correos enviados con éxito.';  // Actualizar estado cuando todo se complete
           this.router.navigate(['/success']);  // Redirigir al éxito si todo fue bien
         },
         error => {
-          console.error('Error enviando correos', error);
+          console.error('Error enviando correos y creando pedido', error);
           this.paymentStatus = 'Error al crear el pedido. Intenta nuevamente.';  // Actualizar estado en caso de error
           this.router.navigate(['/cancel']);  // Redirigir al fallo si hubo un error
         }
       );
+  }
+
+  allowOnlyNumbers(event: KeyboardEvent) {
+    const charCode = event.which ? event.which : event.keyCode;
+    // Solo permitir números (0-9)
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
   }
 
   // Formatear número de tarjeta y detectar tipo

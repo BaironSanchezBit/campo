@@ -30,7 +30,18 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
+  obtenerUsuario(): any {
+    const usuario = localStorage.getItem('usuario');
+    return usuario ? JSON.parse(usuario) : null;
+  }
+
+  obtenerUsuarioId(): string | null {
+    const usuario = this.obtenerUsuario();
+    return usuario ? usuario._id : null;
+  }
+
   cerrarSesion(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
   }
 }

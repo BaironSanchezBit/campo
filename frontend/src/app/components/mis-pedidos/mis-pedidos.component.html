@@ -1,0 +1,77 @@
+<app-navbar></app-navbar>
+
+<div class="container mx-auto mt-6">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Mis Pedidos</h2>
+
+    <!-- Verificar si hay pedidos -->
+    <div *ngIf="pedidos.length > 0; else sinPedidos">
+        <div *ngFor="let pedido of pedidos" class="bg-white shadow-md rounded-lg p-6 mb-6">
+            <!-- Encabezado del pedido -->
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-700">Pedido N°: {{ pedido.pedidoId }}</h3>
+                    <p class="text-gray-500 text-sm"><strong>Fecha:</strong> {{ pedido.fechaCreacion |
+                        date:'longDate':'':'es' }}</p>
+                </div>
+                <div>
+                    <span class="text-lg font-bold text-gray-800">Total: {{ formatCurrency(pedido.total) }}</span>
+                </div>
+            </div>
+
+            <!-- Estado y Botón de acciones -->
+            <div class="flex justify-between items-center mb-4">
+                <strong [ngClass]="{
+                    'text-blue-500': pedido.estadoGeneral === 'enviado a la empresa transportadora',
+                    'text-orange-500': pedido.estadoGeneral === 'en camino',
+                    'text-green-500': pedido.estadoGeneral === 'entregado',
+                    'text-gray-600': pedido.estadoGeneral === 'creado' || pedido.estadoGeneral === 'procesado'
+                }">
+                    <strong>Estado:</strong> {{ pedido.estadoGeneral }}
+                </strong>
+
+                <button *ngIf="pedido.estadoGeneral !== 'entregado'"
+                    class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+                    [routerLink]="['/seguimiento', pedido.pedidoId]">
+                    Rastrear pedido
+                </button>
+
+                <button *ngIf="pedido.estadoGeneral === 'entregado'"
+                    class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+                    [routerLink]="['/seguimiento', pedido.pedidoId]">
+                    Ver detalles de pedido
+                </button>
+            </div>
+
+            <!-- Productos -->
+            <h4 class="text-xl font-medium text-gray-700 mb-2">Productos:</h4>
+            <div class="grid grid-cols-2 gap-4">
+                <div *ngFor="let producto of pedido.productos"
+                    class="flex items-center bg-gray-100 p-4 rounded-lg shadow-sm">
+                    <i class="fa-solid fa-tree text-green-500 text-3xl mr-4"></i>
+                    <div>
+                        <p class="font-medium text-gray-700">{{ producto.productoId.titulo }}</p>
+                        <p class="text-sm text-gray-500">{{ producto.cantidad }} unidades</p>
+                        <p class="text-sm text-gray-500">{{ producto.vendedorId.nombres }} {{
+                            producto.vendedorId.apellidos }}</p>
+                        <strong class="uppercase text-sm text-gray-500 ">
+                            <strong>Estado: </strong>
+                            <span [ngClass]="{
+                                'text-red-500': producto.estado === 'creado',
+                                'text-blue-500': producto.estado === 'enviado',
+                                'text-orange-500': producto.estado === 'en camino',
+                                'text-green-500': producto.estado === 'entregado'
+                            }">{{ producto.estado }}</span>
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensaje cuando no hay pedidos -->
+    <ng-template #sinPedidos>
+        <p class="text-xl text-gray-500">No tienes pedidos registrados.</p>
+    </ng-template>
+</div>
+
+<app-footer></app-footer>

@@ -1,44 +1,28 @@
-const Pedido = require('./pedido.model');  // Asegúrate de que esta ruta sea correcta
-const Producto = require('./producto.model');  // Asegúrate de que esta ruta sea correcta
-const Usuario = require('./auth.model');  // Asegúrate de que esta ruta sea correcta
+const Pedido = require('./pedido.model');
+const Usuario = require('../auth/auth.model');
 
-exports.procesarPago = async (req, res) => {
-    const { email, productos, total, usuarioId } = req.body;
+// Obtener pedido por pedidoId personalizado
+exports.obtenerPedidoPorId = async (req, res) => {
+    const { pedidoId } = req.params;
 
     try {
-        // Buscar al usuario logueado usando Auth.model (por usuarioId)
-        const usuarioLogueado = await Usuario.findById(usuarioId);
-        if (!usuarioLogueado || !usuarioLogueado.correo) {
-            throw new Error('Usuario logueado no encontrado o sin correo electrónico');
+        // Busca por el campo personalizado pedidoId
+        const pedido = await Pedido.findOne({ pedidoId: pedidoId })
+            .populate('productos.productoId')
+            .populate('productos.vendedorId')
+            .exec();
+
+        if (!pedido) {
+            return res.status(404).json({ message: 'Pedido no encontrado' });
         }
 
-        // Obtener los productos con información completa del vendedor
-        const productosConVendedor = await Producto.find({ _id: { $in: productos.map(p => p._id) } }).populate('usuarioId');
-
-        // Crear el pedido en la base de datos
-        const pedido = new Pedido({
-            compradorId: usuarioLogueado._id,
-            productos: productosConVendedor.map(prod => ({
-                productoId: prod._id,
-                vendedorId: prod.usuarioId._id,  // Relación con el vendedor
-                cantidad: productos.find(p => p._id === prod._id).cantidad,  // Tomar la cantidad del producto comprado
-                precio: prod.precio
-            })),
-            total: total
-        });
-
-        await pedido.save();  // Guardar el pedido en la base de datos
-
-        // Enviar correos y otras operaciones...
-
-        res.status(200).json({ message: 'Pago procesado, pedido creado y correos enviados' });
-
+        res.json(pedido);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error al procesar el pago y crear el pedido', error });
+        res.status(500).json({ message: 'Error al obtener el pedido', error });
     }
 };
 
+// Obtener todos los pedidos de un comprador
 exports.obtenerPedidosComprador = async (req, res) => {
     const { usuarioId } = req.params;
 
@@ -50,5 +34,48 @@ exports.obtenerPedidosComprador = async (req, res) => {
         res.json(pedidos);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener los pedidos del comprador', error });
+    }
+};
+
+// Actualizar el estado de un producto dentro de un pedido
+exports.actualizarEstadoProducto = async (req, res) => {
+    const { pedidoId, productoId, nuevoEstado } = req.body;
+
+    try {
+        // Busca el pedido por pedidoId personalizado
+        const pedido = await Pedido.findOne({ pedidoId: pedidoId });
+        if (!pedido) {
+            return res.status(404).json({ message: 'Pedido no encontrado' });
+        }
+
+        const producto = pedido.productos.find(p => p.productoId.toString() === productoId);
+        if (!producto) {
+            return res.status(404).json({ message: 'Producto no encontrado en el pedido' });
+        }
+
+        // Actualiza el estado del producto
+        producto.estado = nuevoEstado;
+        producto.fechaActualizacion = new Date();
+        pedido.fechaActualizacion = new Date();  // Actualizar la fecha del pedido
+
+        // Verificar si todos los productos están en "enviado"
+        const todosEnviados = pedido.productos.every(p => p.estado === 'enviado');
+        if (todosEnviados) {
+            pedido.estadoGeneral = 'enviado a la empresa transportadora';
+            pedido.fechaActualizacion = new Date();
+        }
+
+        // Verificar si todos los productos están en "entregado"
+        const todosEntregados = pedido.productos.every(p => p.estado === 'entregado');
+        if (todosEntregados) {
+            pedido.estadoGeneral = 'entregado';
+            pedido.fechaActualizacion = new Date();
+        }
+
+        await pedido.save();
+        res.status(200).json({ message: 'Estado actualizado con éxito', pedido });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al actualizar el estado del producto', error });
     }
 };
