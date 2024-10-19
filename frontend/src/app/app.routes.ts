@@ -15,6 +15,8 @@ import { SuccessComponent } from './components/success/success.component';
 import { MisPedidosComponent } from './components/mis-pedidos/mis-pedidos.component';
 import { SeguimientoComponent } from './components/seguimiento/seguimiento.component';
 import { PedidosVendedorComponent } from './components/pedidos-vendedor/pedidos-vendedor.component';
+import { TransportadorComponent } from './components/transportador/transportador.component';
+import { PedidosTransportadoraComponent } from './components/pedidos-transportadora/pedidos-transportadora.component';
 
 export const routes: Routes = [
     { path: '', component: InicioComponent },
@@ -22,6 +24,8 @@ export const routes: Routes = [
     { path: 'mercado', component: MercadoComponent },
     { path: 'success', component: SuccessComponent },
     { path: 'cancel', component: CancelComponent },
+    { path: 'transportador', component: TransportadorComponent },
+    { path: 'empresa-transportadora', component: PedidosTransportadoraComponent },
     { path: 'mis-pedidos', component: MisPedidosComponent },
     { path: 'pedidos', component: PedidosVendedorComponent },
     { path: 'seguimiento/:id', component: SeguimientoComponent },

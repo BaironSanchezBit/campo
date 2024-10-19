@@ -1,0 +1,61 @@
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Pedidos para Asignación de Transportadores</h2>
+
+    <div *ngIf="pedidos.length === 0" class="bg-yellow-100 text-yellow-800 p-4 rounded-md">
+        <p>No hay pedidos disponibles para asignación.</p>
+    </div>
+
+    <div *ngFor="let pedido of pedidos" class="bg-white shadow-lg rounded-lg p-6 mb-6">
+        <h3 class="text-xl font-medium text-gray-700 mb-2">Pedido N°: {{ pedido.pedidoId }}</h3>
+
+        <div class="space-y-4">
+            <p class="text-gray-600">
+                Estado:
+                <span [ngClass]="getEstadoColor2(pedido.estadoGeneral)" class="font-semibold capitalize">
+                    {{ pedido.estadoGeneral }}
+                </span>
+            </p>
+            <h4 class="text-lg font-semibold text-gray-800 mt-4">Productos del Pedido:</h4>
+
+            <!-- Lista de productos -->
+            <ul class="divide-y divide-gray-200">
+                <li *ngFor="let producto of pedido.productos" class="py-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-gray-800 font-medium">{{ producto.productoId.titulo }}</p>
+                            <p class="text-gray-600">Cantidad: {{ producto.cantidad }}</p>
+                            <p class="text-gray-600">
+                                Estado:
+                                <span [ngClass]="getEstadoColor(producto.estado)" class="font-semibold capitalize">
+                                    {{ producto.estado }}
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="text-right">
+                            <!-- Botón para cambiar el estado a "Entregado a empresa transportadora" si no está en "Creado" ni "Entregado a empresa transportadora" -->
+                            <button
+                                *ngIf="producto.estado !== 'Creado' && producto.estado !== 'Entregado a empresa transportadora'"
+                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-md"
+                                (click)="cambiarEstadoProducto(pedido.pedidoId, producto.productoId._id, 'Entregado a empresa transportadora')">
+                                Marcar como Entregado a Empresa Transportadora
+                            </button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Selección de transportador una vez todos los productos estén entregados -->
+            <div *ngIf="todosProductosEntregados(pedido.productos)" class="mt-4">
+                <label class="block mb-2 text-sm font-medium text-gray-700">Asignar Transportador:</label>
+                <select [(ngModel)]="pedido.transportadorId"
+                    class="bg-gray-50 border rounded-lg text-gray-900 text-sm p-2 w-full"
+                    (change)="asignarTransportador(pedido.pedidoId, pedido.transportadorId)">
+                    <option *ngFor="let transportador of transportadores" [value]="transportador._id">
+                        {{ transportador.nombre }}
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>

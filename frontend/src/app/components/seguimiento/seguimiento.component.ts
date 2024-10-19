@@ -39,6 +39,6 @@ export class SeguimientoComponent implements OnInit {
   }
 
   allProductsDelivered(): boolean {
-    return this.pedido?.productos.every((producto: any) => producto.estado === 'entregado');
+    return this.pedido?.productos.every((producto: any) => producto.estado === 'Entregado a empresa transportadora');
   }
 }

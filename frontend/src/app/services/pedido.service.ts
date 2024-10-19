@@ -18,4 +18,25 @@ export class PedidoService {
   obtenerPedidosVendedor(vendedorId: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/vendedor/${vendedorId}`);
   }
+
+  actualizarEstadoProducto(pedidoId: number, productoId: string, nuevoEstado: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/actualizar-estado-vendedor`, { pedidoId, productoId, nuevoEstado });
+  }
+
+  actualizarEstadoProductoTransportadora(pedidoId: number, productoId: string, nuevoEstado: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/actualizar-estado-transportador`, { pedidoId, productoId, nuevoEstado });
+  }
+
+  obtenerPedidosPorTransportador(transportadorId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/por-transportador/${transportadorId}`);
+  }
+
+  asignarTransportador(pedidoId: number, transportadorId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/asignar-transportador`, { pedidoId, transportadorId });
+  }
+
+  obtenerPedidosEnviados(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/enviados`); // Ruta para obtener los pedidos en estado "enviado"
+  }
+
 }

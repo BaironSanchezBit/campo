@@ -44,6 +44,28 @@ export class PedidosVendedorComponent implements OnInit {
     );
   }
 
+  cambiarEstadoProducto(pedidoId: number, productoId: any, nuevoEstado: string) {
+    // Verificar que el productoId sea una cadena
+    const productoIdString = productoId._id ? productoId._id : productoId; // Extraer el ID si es un objeto
+
+    // Asegurarte de enviar solo el estado "en camino"
+    if (nuevoEstado !== 'Camino a la empresa transportadora') {
+      console.warn('Solo se permite el estado "en camino" para los vendedores');
+      return;
+    }
+
+    // Enviar la solicitud al backend
+    this.pedidoService.actualizarEstadoProducto(pedidoId, productoIdString, nuevoEstado).subscribe(
+      (response) => {
+        console.log('Estado del producto actualizado:', response);
+        this.obtenerPedidos(); // Recargar los pedidos para reflejar cambios
+      },
+      (error) => {
+        console.error('Error al actualizar el estado del producto:', error);
+      }
+    );
+  }
+
   formatCurrency(value: number): string {
     return `$${value.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   }

@@ -8,8 +8,9 @@ const userSchema = new mongoose.Schema({
     contrasena: { type: String, required: true },
     fotoPerfil: { type: String },
     celular: { type: String, required: true },
-    rol: { type: String, enum: ['comprador', 'vendedor'], default: 'comprador' }
-});
+    rol: { type: String, enum: ['comprador', 'vendedor', 'transportador'], default: 'comprador' } // Se añade el rol de transportador
+  });
+  
 
 // Encriptar la contraseña antes de guardar
 userSchema.pre('save', async function (next) {

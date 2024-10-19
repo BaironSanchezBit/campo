@@ -7,20 +7,21 @@ const pedidoSchema = new Schema({
     compradorId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },  // El comprador que realizó el pedido
     productos: [
         {
-            productoId: { type: Schema.Types.ObjectId, ref: 'Producto', required: true },  // El producto que se compró
-            vendedorId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },   // El vendedor del producto
-            cantidad: { type: Number, required: true },  // Cantidad de unidades compradas
-            precio: { type: Number, required: true },     // Precio del producto al momento de la compra
-            estado: { type: String, enum: ['creado', 'enviado', 'en camino', 'entregado'], default: 'creado' },  // Estado por producto/vendedor
-            fechaActualizacion: { type: Date, default: Date.now },  // Fecha de última actualización del estado del producto
+            productoId: { type: Schema.Types.ObjectId, ref: 'Producto', required: true },
+            vendedorId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
+            cantidad: { type: Number, required: true },
+            precio: { type: Number, required: true },
+            estado: { type: String, enum: ['Creado', 'Camino a la empresa transportadora', 'Entregado a empresa transportadora'], default: 'Creado' },
+            fechaActualizacion: { type: Date, default: Date.now },
+            observaciones: { type: String } // Nuevo campo para observaciones
         }
     ],
     total: { type: Number, required: true },  // Total del pedido
-    estadoGeneral: { type: String, enum: ['creado', 'procesado', 'enviado a la empresa transportadora', 'en camino', 'entregado'], default: 'creado' },  // Estado general del pedido
+    estadoGeneral: { type: String, enum: ['Creado', 'Productos camino a la empresa transportadora', 'Productos en la empresa transportadora', 'Comprobando productos', 'Camino a tu dirección', 'Entregado'], default: 'Creado' },  // Estado general del pedido
     fechaCreacion: { type: Date, default: Date.now },  // Fecha de creación del pedido
     fechaActualizacion: { type: Date, default: Date.now },  // Fecha de la última actualización del pedido
     fechaEntregaEstimada: { type: Date },  // Fecha estimada de entrega
-
+    transportadorId: { type: String },
     // Nuevos campos para información del envío
     direccionEnvio: { type: String, required: true },  // Dirección de envío
     personaRecibe: { type: String, required: true },  // Nombre de la persona que recibe
