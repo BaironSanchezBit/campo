@@ -14,6 +14,7 @@ import { CancelComponent } from './components/cancel/cancel.component';
 import { SuccessComponent } from './components/success/success.component';
 import { MisPedidosComponent } from './components/mis-pedidos/mis-pedidos.component';
 import { SeguimientoComponent } from './components/seguimiento/seguimiento.component';
+import { PedidosVendedorComponent } from './components/pedidos-vendedor/pedidos-vendedor.component';
 
 export const routes: Routes = [
     { path: '', component: InicioComponent },
@@ -22,6 +23,7 @@ export const routes: Routes = [
     { path: 'success', component: SuccessComponent },
     { path: 'cancel', component: CancelComponent },
     { path: 'mis-pedidos', component: MisPedidosComponent },
+    { path: 'pedidos', component: PedidosVendedorComponent },
     { path: 'seguimiento/:id', component: SeguimientoComponent },
     { path: 'publicar', component: PublicarComponent },
     { path: 'pasarela-pago', component: PaymentComponent },

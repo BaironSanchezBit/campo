@@ -37,6 +37,30 @@ exports.obtenerPedidosComprador = async (req, res) => {
     }
 };
 
+// Obtener pedidos para un vendedor específico
+exports.obtenerPedidosVendedor = async (req, res) => {
+    const { vendedorId } = req.params;
+
+    try {
+        // Buscar pedidos que contengan productos del vendedor
+        const pedidos = await Pedido.find({ 'productos.vendedorId': vendedorId })
+            .populate('productos.productoId')
+            .exec();
+
+        // Filtrar productos que pertenezcan al vendedor
+        const pedidosDelVendedor = pedidos.map(pedido => {
+            const productosDelVendedor = pedido.productos.filter(
+                producto => producto.vendedorId.toString() === vendedorId
+            );
+            return { ...pedido.toObject(), productos: productosDelVendedor };
+        });
+
+        res.json(pedidosDelVendedor);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener los pedidos del vendedor', error });
+    }
+};
+
 // Actualizar el estado de un producto dentro de un pedido
 exports.actualizarEstadoProducto = async (req, res) => {
     const { pedidoId, productoId, nuevoEstado } = req.body;

@@ -14,4 +14,8 @@ export class PedidoService {
   getPedidosByUsuarioId(usuarioId: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/comprador/${usuarioId}`);
   }
+
+  obtenerPedidosVendedor(vendedorId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/vendedor/${vendedorId}`);
+  }
 }
