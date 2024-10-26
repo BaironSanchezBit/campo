@@ -1,11 +1,20 @@
 <app-navbar></app-navbar>
 
-
 <div class="flex content-center justify-center flex-col py-5 pt-20">
-    <h2 class="titleProductos text-center bebas-neue-regular">publicaciones</h2>
+    <h2 class="titleProductos text-center bebas-neue-regular">Publicaciones</h2>
     <h3 class="subtitleProductos text-center">Acá podrás ver las publicaciones de nuestros campesinos.</h3>
+
+    <!-- Campo de búsqueda y selección de categorías -->
+    <div class="flex justify-center items-center my-4">
+        <select class="border p-2 rounded me-2" [(ngModel)]="selectedCategory" (change)="filtrarProductos()">
+            <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+        </select>
+        <input type="text" placeholder="Buscar productos..." [(ngModel)]="searchText" (input)="filtrarProductos()"
+            class="w-full max-w-md p-2 border rounded" />
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mx-auto">
-        <div *ngFor="let producto of productos"
+        <div *ngFor="let producto of productosFiltrados"
             class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
             <a href="#">
                 <img [src]="getFotoUrl(producto.fotos[0])" alt="{{ producto.titulo }}"
@@ -20,11 +29,9 @@
                     producto.usuarioId.apellidos }}</p>
                 <p class="text-gray-600 dark:text-gray-300">Ciudad: {{ producto.ciudad }}</p>
                 <div class="flex items-center mt-2.5 mb-5">
-                    <!-- Rating y precio -->
-                    <span class="text-3xl font-bold text-gray-900 dark:text-white">
-                        {{ transform(producto.precio) }}
-                    </span>
-
+                    <!-- Precio -->
+                    <span class="text-3xl font-bold text-gray-900 dark:text-white">{{ transform(producto.precio)
+                        }}</span>
                 </div>
                 <button type="button" (click)="addToCart(producto)"
                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -34,3 +41,5 @@
         </div>
     </div>
 </div>
+
+<app-footer></app-footer>

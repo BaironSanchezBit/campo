@@ -39,4 +39,7 @@ export class PedidoService {
     return this.http.get(`${this.baseUrl}/enviados`); // Ruta para obtener los pedidos en estado "enviado"
   }
 
+  actualizarEstadoGeneral(pedidoId: number, nuevoEstado: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/actualizar-estado-general`, { pedidoId, nuevoEstado });
+  }
 }

@@ -179,4 +179,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       event.preventDefault();
     }
   }
+  
+  navigateToCategory(category: string) {
+    this.router.navigate(['/mercado'], { queryParams: { categoria: category } });
+  }
 }

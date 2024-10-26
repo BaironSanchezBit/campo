@@ -36,7 +36,12 @@ export class MisPedidosComponent implements OnInit {
   obtenerPedidos() {
     this.pedidoService.getPedidosByUsuarioId(this.usuarioId!).subscribe(
       (response) => {
-        this.pedidos = response.sort((a: any, b: any) => a.estadoGeneral === 'entregado' ? 1 : -1); // Ordenar los pedidos
+        this.pedidos = response.sort((a: any, b: any) => {
+          // Mueve los pedidos entregados al final
+          if (a.estadoGeneral === 'Entregado') return 1;
+          if (b.estadoGeneral === 'Entregado') return -1;
+          return 0;
+        });
       },
       (error) => {
         console.error('Error al obtener los pedidos', error);

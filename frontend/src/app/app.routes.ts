@@ -24,7 +24,7 @@ export const routes: Routes = [
     { path: 'mercado', component: MercadoComponent },
     { path: 'success', component: SuccessComponent },
     { path: 'cancel', component: CancelComponent },
-    { path: 'transportador', component: TransportadorComponent },
+    { path: 'transportador/:id', component: TransportadorComponent },
     { path: 'empresa-transportadora', component: PedidosTransportadoraComponent },
     { path: 'mis-pedidos', component: MisPedidosComponent },
     { path: 'pedidos', component: PedidosVendedorComponent },

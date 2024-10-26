@@ -1,0 +1,57 @@
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Pedidos Asignados al Transportador</h2>
+
+    <div *ngIf="pedidos.length === 0" class="bg-yellow-100 text-yellow-800 p-4 rounded-md">
+        <p>No hay pedidos asignados a este transportador.</p>
+    </div>
+
+    <div *ngFor="let pedido of pedidos" class="bg-white shadow-lg rounded-lg p-6 mb-6">
+        <h3 class="text-xl font-medium text-gray-700 mb-2">Pedido N°: {{ pedido.pedidoId }}</h3>
+
+        <div class="space-y-4">
+            <p class="text-gray-600">
+                <b>Estado:</b>
+                <span [ngClass]="getEstadoColor2(pedido.estadoGeneral)" class="font-semibold capitalize">
+                    {{ pedido.estadoGeneral }}
+                </span>
+            </p>
+            <p><b>Dirección: </b> <span>{{ pedido.direccionEnvio }}, {{ pedido.ciudad }}</span></p>
+            <p><b>Persona que recibe: </b> <span>{{ pedido.personaRecibe }}</span></p>
+            <p><b>Teléfono: </b> <span>{{ pedido.numeroCelular }}</span></p>
+
+            <h4 class="text-lg font-semibold text-gray-800 mt-4">Productos del Pedido:</h4>
+
+            <ul class="divide-y divide-gray-200">
+                <li *ngFor="let producto of pedido.productos" class="py-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-gray-800 font-medium">{{ producto.productoId.titulo }}</p>
+                            <p class="text-gray-600">Cantidad: {{ producto.cantidad }}</p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Botones para cambiar el estado general -->
+            <div class="mt-4">
+                <button *ngIf="pedido.estadoGeneral === 'Productos en la empresa transportadora'"
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md"
+                    (click)="cambiarEstadoGeneral(pedido.pedidoId, 'Comprobando productos')">
+                    Marcar como Comprobando Productos
+                </button>
+
+                <button *ngIf="pedido.estadoGeneral === 'Comprobando productos'"
+                    class="bg-violet-500 hover:bg-violet-600 text-white px-4 py-2 rounded-lg shadow-md"
+                    (click)="cambiarEstadoGeneral(pedido.pedidoId, 'Camino a tu dirección')">
+                    Marcar como Camino a tu Dirección
+                </button>
+
+                <button *ngIf="pedido.estadoGeneral === 'Camino a tu dirección'"
+                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-md"
+                    (click)="cambiarEstadoGeneral(pedido.pedidoId, 'Entregado')">
+                    Marcar como Entregado
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

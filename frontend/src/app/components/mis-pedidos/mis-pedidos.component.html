@@ -21,21 +21,23 @@
             <!-- Estado y Botón de acciones -->
             <div class="flex justify-between items-center mb-4">
                 <strong [ngClass]="{
-                    'text-blue-500': pedido.estadoGeneral === 'enviado a la empresa transportadora',
-                    'text-orange-500': pedido.estadoGeneral === 'en camino',
-                    'text-green-500': pedido.estadoGeneral === 'entregado',
-                    'text-gray-600': pedido.estadoGeneral === 'creado' || pedido.estadoGeneral === 'procesado'
+                    'text-blue-500': pedido.estadoGeneral === 'Productos camino a la empresa transportadora',
+                    'text-indigo-500': pedido.estadoGeneral === 'Productos en la empresa transportadora',
+                    'text-violet-500': pedido.estadoGeneral === 'Comprobando productos',
+                    'text-orange-500': pedido.estadoGeneral === 'Camino a tu dirección',
+                    'text-green-500': pedido.estadoGeneral === 'Entregado',
+                    'text-gray-600': pedido.estadoGeneral === 'Creado' || pedido.estadoGeneral === 'procesado'
                 }">
                     <strong>Estado:</strong> {{ pedido.estadoGeneral }}
                 </strong>
 
-                <button *ngIf="pedido.estadoGeneral !== 'entregado'"
+                <button *ngIf="pedido.estadoGeneral !== 'Entregado'"
                     class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
                     [routerLink]="['/seguimiento', pedido.pedidoId]">
                     Rastrear pedido
                 </button>
 
-                <button *ngIf="pedido.estadoGeneral === 'entregado'"
+                <button *ngIf="pedido.estadoGeneral === 'Entregado'"
                     class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
                     [routerLink]="['/seguimiento', pedido.pedidoId]">
                     Ver detalles de pedido
@@ -56,7 +58,7 @@
                         <strong class="uppercase text-sm text-gray-500 ">
                             <strong>Estado: </strong>
                             <span [ngClass]="{
-                                'text-red-500': producto.estado === 'creado',
+                                'text-red-500': producto.estado === 'Creado',
                                 'text-blue-500': producto.estado === 'enviado',
                                 'text-orange-500': producto.estado === 'en camino',
                                 'text-green-500': producto.estado === 'entregado'

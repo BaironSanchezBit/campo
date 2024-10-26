@@ -40,65 +40,65 @@
                         class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
                         <ul class="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
                             <li>
-                                <a href="#"
+                                <a (click)="navigateToCategory('Productos Frescos')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos
                                     Frescos</a>
                             </li>
                             <li>
-                                <a href="#"
+                                <a (click)="navigateToCategory('Lácteos y Huevos')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Lácteos
                                     y Huevos</a>
                             </li>
                             <li>
-                                <a href="#"
+                                <a (click)="navigateToCategory('Carnes y Aves')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Carnes
                                     y Aves</a>
                             </li>
                             <li>
-                                <a href="#"
+                                <a (click)="navigateToCategory('Granos y Cereales')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Granos
                                     y Cereales</a>
                             </li>
                             <li>
-                                <a href="#"
+                                <a (click)="navigateToCategory('Legumbres')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Legumbres</a>
                             </li>
                             <li>
-                                <a href="#"
+                                <a (click)="navigateToCategory('Hierbas y Especias')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Hierbas
                                     y Especias</a>
                             </li>
                             <li>
-                                <a href="#"
+                                <a (click)="navigateToCategory('Bebidas')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Bebidas</a>
                             </li>
                             <li>
-                                <a href="#"
+                                <a (click)="navigateToCategory('Productos de Panadería')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos
                                     de Panadería</a>
                             </li>
                             <li>
-                                <a href="#"
+                                <a (click)="navigateToCategory('Productos Procesados y Empaquetados')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos
                                     Procesados y Empaquetados</a>
                             </li>
                             <li>
-                                <a href="#"
+                                <a (click)="navigateToCategory('Productos Artesanales')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos
                                     Artesanales</a>
                             </li>
                             <li>
-                                <a href="#"
+                                <a (click)="navigateToCategory('Alternativas Lácteas')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Alternativas
                                     Lácteas</a>
                             </li>
                             <li>
-                                <a href="#"
+                                <a (click)="navigateToCategory('Productos Naturales y Orgánicos')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos
                                     Naturales y Orgánicos</a>
                             </li>
                             <li>
-                                <a href="#"
+                                <a (click)="navigateToCategory('Productos de Temporada')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Productos
                                     de Temporada</a>
                             </li>
@@ -160,9 +160,8 @@
                                 <div class="truncate">{{ usuario?.correo }}</div>
                             </div>
                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-                                <li><a routerLink="/mis-pedidos" class="block px-4 py-2">Mis Pedidos</a></li>
+                                <li><a routerLink="/mis-pedidos" *ngIf="usuario?.rol === 'comprador'" class="block px-4 py-2">Mis Pedidos</a></li>
                                 <li><a routerLink="/perfil" class="block px-4 py-2">Perfil</a></li>
-                                <li><a routerLink="#" class="block px-4 py-2">Earnings</a></li>
                             </ul>
                             <div class="py-2">
                                 <a href="#" (click)="cerrarSesion()" class="block px-4 py-2">Cerrar sesión</a>
