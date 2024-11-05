@@ -115,6 +115,15 @@
                     <a routerLink="/publicar" routerLinkActive="active"
                         class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Publicar</a>
                 </li>
+                <li *ngIf="usuario?.rol === 'empresa'">
+                    <a routerLink="/empresa-transportadora" routerLinkActive="active"
+                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Pedidos</a>
+                </li>
+                <li *ngIf="usuario?.rol === 'transportador'">
+                    <a [routerLink]="'/transportador/'+usuario._id" routerLinkActive="active"
+                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Control
+                        de pedidos</a>
+                </li>
                 <li *ngIf="usuario?.rol === 'vendedor'">
                     <a routerLink="/mis-publicaciones" routerLinkActive="active"
                         class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Ver
@@ -160,7 +169,8 @@
                                 <div class="truncate">{{ usuario?.correo }}</div>
                             </div>
                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-                                <li><a routerLink="/mis-pedidos" *ngIf="usuario?.rol === 'comprador'" class="block px-4 py-2">Mis Pedidos</a></li>
+                                <li><a routerLink="/mis-pedidos" *ngIf="usuario?.rol === 'comprador'"
+                                        class="block px-4 py-2">Mis Pedidos</a></li>
                                 <li><a routerLink="/perfil" class="block px-4 py-2">Perfil</a></li>
                             </ul>
                             <div class="py-2">
@@ -332,7 +342,9 @@
                             <option value="vendedor">Vendedor</option>
                         </select>
                     </div>
-                    <div class="g-recaptcha" data-sitekey="6LfinXUqAAAAANSNuMjouaodI69lcsIqMUXcB4Jr"></div>
+                    <div class="flex items-center justify-center py-1">
+                        <re-captcha *ngIf="siteKey" (resolved)="resolved($event!)" [siteKey]="siteKey!"></re-captcha>
+                    </div>
                     <div *ngIf="errorMessage" class="errorMessage">
                         {{ errorMessage }}
                     </div>
@@ -359,7 +371,8 @@
                     <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                         <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                             <div class="flex items-start justify-between">
-                                <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">Carro de compras</h2>
+                                <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">Carro de compras
+                                </h2>
                                 <div class="ml-3 flex h-7 items-center">
                                     <button (click)="toggleCart()" type="button"
                                         class="relative -m-2 p-2 text-gray-400 hover:text-gray-500">

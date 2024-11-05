@@ -6,13 +6,13 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CartService } from '../../services/cart.service';
 import Swal from 'sweetalert2';
-
+import { RecaptchaFormsModule, RecaptchaModule } from 'ng-recaptcha';
 declare var initDropdowns: any;  // Si usas una biblioteca externa como Flowbite, declárala
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, RouterModule],
+  imports: [CommonModule, FormsModule, HttpClientModule, RouterModule, RecaptchaModule, RecaptchaFormsModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
@@ -29,6 +29,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   usuario: any = null;
   productosCarrito: any[] = [];
   private intentarPagar: boolean = false;
+  captchaResponse: string = '';
+  siteKey: string = '6LfinXUqAAAAANSNuMjouaodI69lcsIqMUXcB4Jr';
 
   constructor(private authService: AuthService, private router: Router, private cartService: CartService) { }
 
@@ -47,6 +49,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     if (typeof initDropdowns === 'function') {
       initDropdowns();  // Asegúrate de reemplazar esto con la función que inicializa tus dropdowns
     }
+  }
+
+  resolved(captchaResponse: string): void {
+    this.captchaResponse = captchaResponse;
   }
 
   toggleCart() {
@@ -126,6 +132,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         this.isDropdownOpen = false;
         this.toggleAuthModal();
 
+        if (usuario.rol === 'admin') {
+          this.router.navigate(['/admin']);
+          return;
+        }
+
         // Redirigir a la pasarela de pago si el usuario intentaba pagar
         if (this.intentarPagar) {
           this.router.navigate(['/pasarela-pago']);  // Cambia '/pago' a tu pasarela de pago
@@ -147,19 +158,42 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   }
 
   onRegistrarse() {
-    // Verificar si reCAPTCHA fue completado
-    const captchaResponse = (document.querySelector('.g-recaptcha-response') as HTMLInputElement)?.value;
-    if (!captchaResponse) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Por favor completa el CAPTCHA',
-        confirmButtonColor: '#e74c3c'
-      });
+    // Verificación de campos vacíos
+    if (!this.register.nombres.trim()) {
+      this.errorMessage = 'Por favor ingresa tus nombres.';
       return;
     }
-  
-    // Incluye el token de reCAPTCHA en la solicitud
-    const registroData = { ...this.register, captchaToken: captchaResponse };
+    if (!this.register.apellidos.trim()) {
+      this.errorMessage = 'Por favor ingresa tus apellidos.';
+      return;
+    }
+    if (!this.register.correo.trim()) {
+      this.errorMessage = 'Por favor ingresa tu correo electrónico.';
+      return;
+    }
+    if (!this.register.contrasena.trim()) {
+      this.errorMessage = 'Por favor ingresa una contraseña.';
+      return;
+    }
+    if (!this.register.celular.trim()) {
+      this.errorMessage = 'Por favor ingresa tu número de celular.';
+      return;
+    }
+    if (!this.register.rol.trim()) {
+      this.errorMessage = 'Por favor selecciona un rol.';
+      return;
+    }
+
+    // Verificar reCAPTCHA
+    if (!this.captchaResponse) {
+      this.errorMessage = 'Por favor completa el CAPTCHA.';
+      return;
+    }
+
+    // Limpiar mensajes de error y continuar con el registro
+    this.errorMessage = '';
+    const registroData = { ...this.register, captchaToken: this.captchaResponse };
+
     this.authService.registrarUsuario(registroData).subscribe(
       (response) => {
         Swal.fire({
@@ -172,12 +206,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         this.router.navigate(['/']);
       },
       (error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error en el Registro',
-          text: error.error?.msg || 'Ocurrió un error al registrar el usuario. Inténtalo de nuevo.',
-          confirmButtonColor: '#e74c3c'
-        });
+        this.errorMessage = error.error?.msg || 'Ocurrió un error al registrar el usuario. Inténtalo de nuevo.';
       }
     );
   }

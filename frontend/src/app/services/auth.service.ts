@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -47,5 +47,30 @@ export class AuthService {
   cerrarSesion(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
+  }
+
+  crearUsuario(usuario: any): Observable<any> {
+    const headers = this.obtenerHeaders();
+    return this.http.post(`${this.apiUrl}/usuario`, usuario, { headers });
+  }
+
+  actualizarUsuario(id: string, usuario: any): Observable<any> {
+    const headers = this.obtenerHeaders();
+    return this.http.put(`${this.apiUrl}/usuario/${id}`, usuario, { headers });
+  }
+
+  eliminarUsuario(id: string): Observable<any> {
+    const headers = this.obtenerHeaders();
+    return this.http.delete(`${this.apiUrl}/usuario/${id}`, { headers });
+  }
+
+  private obtenerHeaders(): HttpHeaders {
+    const token = this.obtenerToken();
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
+
+  obtenerUsuarios(): Observable<any> {
+    const headers = this.obtenerHeaders();
+    return this.http.get(`${this.apiUrl}/usuarios`, { headers });
   }
 }

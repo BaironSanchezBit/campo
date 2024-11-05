@@ -18,6 +18,7 @@ import { PedidosVendedorComponent } from './components/pedidos-vendedor/pedidos-
 import { TransportadorComponent } from './components/transportador/transportador.component';
 import { PedidosTransportadoraComponent } from './components/pedidos-transportadora/pedidos-transportadora.component';
 import { ConfirmacionCuentaComponent } from './components/confirmacion-cuenta/confirmacion-cuenta.component';
+import { AdminComponent } from './components/admin/admin.component';
 
 export const routes: Routes = [
     { path: '', component: InicioComponent },
@@ -39,5 +40,6 @@ export const routes: Routes = [
     { path: 'politica-privacidad', component: PoliticaPrivacidadComponent },
     { path: 'terminos-condiciones', component: TerminosCondicionesComponent },
     { path: 'confirmar/:token', component: ConfirmacionCuentaComponent },
+    { path: 'admin', component: AdminComponent },
     { path: '', redirectTo: '', pathMatch: 'full' }
 ];

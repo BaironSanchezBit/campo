@@ -1,0 +1,128 @@
+<!-- Barra de navegación -->
+<nav class="bg-blue-600 text-white p-4 flex justify-between items-center shadow-md mb-6">
+    <div class="flex items-center space-x-4">
+        <h1 class="text-lg font-semibold">Panel de Administración</h1>
+    </div>
+    <div class="flex items-center space-x-4">
+        <!-- Botón para cerrar sesión -->
+        <button (click)="cerrarSesion()"
+            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium">
+            Cerrar Sesión
+        </button>
+    </div>
+</nav>
+
+<!-- Contenido principal de administración de usuarios -->
+<div class="p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
+    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Lista de Usuarios</h2>
+
+    <!-- Tabla de usuarios -->
+    <div class="overflow-x-auto mb-6">
+        <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <thead class="bg-gray-100 dark:bg-gray-700">
+                <tr>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">
+                        Nombres</th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">
+                        Apellidos</th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">
+                        Correo</th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">
+                        Rol</th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">
+                        Verificado</th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">
+                        Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let usuario of usuarios"
+                    class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="px-6 py-4">{{ usuario.nombres }}</td>
+                    <td class="px-6 py-4">{{ usuario.apellidos }}</td>
+                    <td class="px-6 py-4">{{ usuario.correo }}</td>
+                    <td class="px-6 py-4 capitalize">{{ usuario.rol }}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                            [ngClass]="usuario.verificado ? 'bg-green-100 text-green-800 dark:bg-green-600 dark:text-white' : 'bg-red-100 text-red-800 dark:bg-red-600 dark:text-white'">
+                            {{ usuario.verificado ? 'Sí' : 'No' }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 space-x-2">
+                        <button (click)="iniciarEdicion(usuario)"
+                            class="text-blue-600 dark:text-blue-400 hover:underline">Editar</button>
+                        <button (click)="eliminarUsuario(usuario._id)"
+                            class="text-red-600 dark:text-red-400 hover:underline">Eliminar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Formulario de nuevo usuario: Se oculta si hay un usuario en edición -->
+    <div *ngIf="!usuarioEditando" class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-lg mb-6">
+        <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Crear Nuevo Usuario</h3>
+        <form (ngSubmit)="crearUsuario()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input [(ngModel)]="usuarioNuevo.nombres" name="nombres" autocomplete="off" placeholder="Nombres" required
+                class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+            <input [(ngModel)]="usuarioNuevo.apellidos" name="apellidos" autocomplete="off" placeholder="Apellidos"
+                required
+                class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+            <input [(ngModel)]="usuarioNuevo.correo" name="correo" autocomplete="off" placeholder="Correo" type="email"
+                required
+                class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+            <input [(ngModel)]="usuarioNuevo.contrasena" name="contrasena" autocomplete="off" placeholder="Contraseña"
+                type="password" required
+                class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+            <input [(ngModel)]="usuarioNuevo.celular" name="celular" autocomplete="off" placeholder="Celular" required
+                class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+            <select [(ngModel)]="usuarioNuevo.rol" name="rol" autocomplete="off" required
+                class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                <option value="comprador">Comprador</option>
+                <option value="vendedor">Vendedor</option>
+                <option value="empresa">Empresa Transportadora</option>
+                <option value="transportador">Transportador</option>
+                <option value="admin">Administrador</option>
+            </select>
+            <button type="submit"
+                class="col-span-1 md:col-span-2 mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg shadow-lg">Crear
+                Usuario</button>
+        </form>
+    </div>
+
+    <!-- Formulario de edición de usuario -->
+    <div *ngIf="usuarioEditando" class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-lg">
+        <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Editar Usuario</h3>
+        <form (ngSubmit)="actualizarUsuario()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input [(ngModel)]="usuarioEditando.nombres" name="editarNombres" placeholder="Nombres" required
+                class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+            <input [(ngModel)]="usuarioEditando.apellidos" name="editarApellidos" placeholder="Apellidos" required
+                class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+            <input [(ngModel)]="usuarioEditando.correo" name="editarCorreo" placeholder="Correo" type="email" required
+                class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+            <input [(ngModel)]="usuarioEditando.celular" name="editarCelular" placeholder="Celular" required
+                class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+            <select [(ngModel)]="usuarioEditando.rol" name="editarRol" required
+                class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                <option value="comprador">Comprador</option>
+                <option value="vendedor">Vendedor</option>
+                <option value="empresa">Empresa Transportadora</option>
+                <option value="transportador">Transportador</option>
+                <option value="admin">Administrador</option>
+            </select>
+            <div class="col-span-1 md:col-span-2 flex justify-between space-x-4 mt-4">
+                <button type="submit"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg shadow-lg">Guardar
+                    Cambios</button>
+                <button type="button" (click)="usuarioEditando = null"
+                    class="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 rounded-lg shadow-lg">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -18,7 +18,7 @@ exports.registrarUsuario = async (req, res) => {
         // Paso 2: Validar el token de reCAPTCHA
         const secretKey = '6LfinXUqAAAAAIU7TPyFlme33x4EnOmqk5q9Cmad'; // tu clave secreta de reCAPTCHA
         const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captchaToken}`;
-        
+
         const response = await axios.post(verifyUrl);
         if (!response.data.success) {
             return res.status(400).json({ msg: 'Error de verificación de CAPTCHA' });
@@ -67,6 +67,16 @@ exports.registrarUsuario = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send('Error en el servidor');
+    }
+};
+
+exports.obtenerUsuarios = async (req, res) => {
+    try {
+        const usuarios = await Usuario.find({}, '-contrasena'); // Excluye la contraseña por seguridad
+        res.json(usuarios);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los usuarios');
     }
 };
 
@@ -131,5 +141,52 @@ exports.iniciarSesion = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send('Error en el servidor');
+    }
+};
+
+// Crear un usuario
+exports.crearUsuario = async (req, res) => {
+    const { nombres, apellidos, correo, contrasena, fotoPerfil, celular, rol, verificado } = req.body;
+    try {
+        let usuario = await Usuario.findOne({ correo });
+        if (usuario) {
+            return res.status(400).json({ msg: 'El usuario ya existe' });
+        }
+        usuario = new Usuario({ nombres, apellidos, correo, contrasena, fotoPerfil, celular, rol, verificado });
+        await usuario.save();
+        res.status(201).json(usuario);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};
+
+// Actualizar un usuario
+exports.actualizarUsuario = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const usuario = await Usuario.findByIdAndUpdate(id, req.body, { new: true });
+        if (!usuario) {
+            return res.status(404).json({ msg: 'Usuario no encontrado' });
+        }
+        res.json(usuario);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};
+
+// Eliminar un usuario
+exports.eliminarUsuario = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const usuario = await Usuario.findByIdAndDelete(id);
+        if (!usuario) {
+            return res.status(404).json({ msg: 'Usuario no encontrado' });
+        }
+        res.json({ msg: 'Usuario eliminado' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: 'Error en el servidor' });
     }
 };

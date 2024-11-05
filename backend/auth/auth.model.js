@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     contrasena: { type: String, required: true },
     fotoPerfil: { type: String },
     celular: { type: String, required: true },
-    rol: { type: String, enum: ['comprador', 'vendedor', 'transportador'], default: 'comprador' },
+    rol: { type: String, enum: ['comprador', 'vendedor', 'admin', 'empresa', 'transportador'], default: 'comprador' },
     verificado: { type: Boolean, default: false } // Agregar el campo verificado
 });
 
