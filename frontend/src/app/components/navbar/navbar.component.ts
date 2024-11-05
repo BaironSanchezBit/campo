@@ -147,35 +147,40 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   }
 
   onRegistrarse() {
-    this.authService.registrarUsuario(this.register).subscribe(
+    // Verificar si reCAPTCHA fue completado
+    const captchaResponse = (document.querySelector('.g-recaptcha-response') as HTMLInputElement)?.value;
+    if (!captchaResponse) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Por favor completa el CAPTCHA',
+        confirmButtonColor: '#e74c3c'
+      });
+      return;
+    }
+  
+    // Incluye el token de reCAPTCHA en la solicitud
+    const registroData = { ...this.register, captchaToken: captchaResponse };
+    this.authService.registrarUsuario(registroData).subscribe(
       (response) => {
-        // Mostrar SweetAlert de éxito
         Swal.fire({
           icon: 'success',
           title: 'Registro Exitoso',
           text: 'Revisa tu correo para confirmar la cuenta en los próximos 5 minutos.',
           confirmButtonColor: '#27ae60'
         });
-
-        this.toggleAuthModal(); // Cerrar el modal de autenticación
-        this.router.navigate(['/login']); // Redirigir al usuario a la página de inicio de sesión
+        this.toggleAuthModal();
+        this.router.navigate(['/']);
       },
       (error) => {
-        console.error('Error al registrar usuario', error);
-
-        // Mostrar SweetAlert de error
         Swal.fire({
           icon: 'error',
           title: 'Error en el Registro',
           text: error.error?.msg || 'Ocurrió un error al registrar el usuario. Inténtalo de nuevo.',
           confirmButtonColor: '#e74c3c'
         });
-
-        this.errorMessage = error.error?.msg || 'Error al registrar usuario';
       }
     );
   }
-
 
   cerrarSesion() {
     this.authService.cerrarSesion();

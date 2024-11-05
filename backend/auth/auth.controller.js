@@ -1,3 +1,4 @@
+const axios = require('axios');
 const Usuario = require('./auth.model');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
@@ -10,18 +11,26 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Registro de usuario con correo de confirmación estilizado
 exports.registrarUsuario = async (req, res) => {
-    const { nombres, apellidos, correo, contrasena, fotoPerfil, celular, rol } = req.body;
+    const { nombres, apellidos, correo, contrasena, fotoPerfil, celular, rol, captchaToken } = req.body;
 
     try {
-        // Verificar si el usuario ya existe
+        // Paso 2: Validar el token de reCAPTCHA
+        const secretKey = '6LfinXUqAAAAAIU7TPyFlme33x4EnOmqk5q9Cmad'; // tu clave secreta de reCAPTCHA
+        const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captchaToken}`;
+        
+        const response = await axios.post(verifyUrl);
+        if (!response.data.success) {
+            return res.status(400).json({ msg: 'Error de verificación de CAPTCHA' });
+        }
+
+        // Paso 3: Verificar si el usuario ya existe
         let usuario = await Usuario.findOne({ correo });
         if (usuario) {
             return res.status(400).json({ msg: 'El usuario ya está registrado' });
         }
 
-        // Crear nuevo usuario sin verificación
+        // Crear nuevo usuario
         usuario = new Usuario({ nombres, apellidos, correo, contrasena, fotoPerfil, celular, rol, verificado: false });
         await usuario.save();
 
@@ -34,20 +43,20 @@ exports.registrarUsuario = async (req, res) => {
             to: usuario.correo,
             subject: 'Confirma tu cuenta - Arriba el Campo',
             html: `
-            <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
-                <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #dddddd;">
-                    <h2 style="color: #27ae60; text-align: center;">Bienvenido a Arriba el Campo</h2>
-                    <p style="font-size: 16px; color: #555555;">Hola ${nombres},</p>
-                    <p style="font-size: 16px; color: #555555;">Gracias por registrarte en Arriba el Campo. Para activar tu cuenta y empezar a disfrutar de todos los beneficios, confirma tu correo electrónico haciendo clic en el botón a continuación:</p>
-                    
-                    <div style="text-align: center; margin-top: 20px;">
-                        <a href="http://localhost:4200/confirmar/${tokenVerificacion}" style="background-color: #27ae60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-size: 16px;">Confirmar Cuenta</a>
+                <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+                    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #dddddd;">
+                        <h2 style="color: #27ae60; text-align: center;">Bienvenido a Arriba el Campo</h2>
+                        <p style="font-size: 16px; color: #555555;">Hola ${nombres},</p>
+                        <p style="font-size: 16px; color: #555555;">Gracias por registrarte en Arriba el Campo. Para activar tu cuenta y empezar a disfrutar de todos los beneficios, confirma tu correo electrónico haciendo clic en el botón a continuación:</p>
+                        
+                        <div style="text-align: center; margin-top: 20px;">
+                            <a href="http://localhost:4200/confirmar/${tokenVerificacion}" style="background-color: #27ae60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-size: 16px;">Confirmar Cuenta</a>
+                        </div>
+                        
+                        <p style="font-size: 16px; color: #555555; margin-top: 20px;">Este enlace expirará en 5 minutos. Si no solicitaste esta confirmación, puedes ignorar este correo.</p>
+                        <p style="font-size: 14px; color: #aaaaaa; text-align: center; margin-top: 20px;">Arriba el Campo - Promoviendo la agricultura local</p>
                     </div>
-                    
-                    <p style="font-size: 16px; color: #555555; margin-top: 20px;">Este enlace expirará en 5 minutos. Si no solicitaste esta confirmación, puedes ignorar este correo.</p>
-                    <p style="font-size: 14px; color: #aaaaaa; text-align: center; margin-top: 20px;">Arriba el Campo - Promoviendo la agricultura local</p>
                 </div>
-            </div>
             `
         };
 
@@ -60,7 +69,6 @@ exports.registrarUsuario = async (req, res) => {
         res.status(500).send('Error en el servidor');
     }
 };
-
 
 exports.confirmarCuenta = async (req, res) => {
     const { token } = req.params;
