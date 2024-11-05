@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CartService } from '../../services/cart.service';
+import Swal from 'sweetalert2';
 
 declare var initDropdowns: any;  // Si usas una biblioteca externa como Flowbite, declárala
 
@@ -136,6 +137,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       (error) => {
         console.error('Error al iniciar sesión', error);
         this.errorMessage = error.error?.msg || 'Error al iniciar sesión';
+
+        // Comprobar si el error es de cuenta no verificada
+        if (error.error?.msg === 'Por favor confirma tu cuenta antes de iniciar sesión.') {
+          this.errorMessage = 'Por favor confirma tu cuenta. Revisa tu correo electrónico.';
+        }
       }
     );
   }
@@ -143,23 +149,33 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   onRegistrarse() {
     this.authService.registrarUsuario(this.register).subscribe(
       (response) => {
-        const token = response.token;
-        const usuario = response.user;
-        this.authService.guardarToken(token);
-        this.authService.guardarUsuarioEnLocalStorage(usuario);
-        this.usuario = usuario;
-        this.isLoggedIn = true;
-        this.isDropdownOpen = false;
-        this.toggleAuthModal();
-        this.router.navigate(['/dashboard']);
-        this.ngAfterViewInit();
+        // Mostrar SweetAlert de éxito
+        Swal.fire({
+          icon: 'success',
+          title: 'Registro Exitoso',
+          text: 'Revisa tu correo para confirmar la cuenta en los próximos 5 minutos.',
+          confirmButtonColor: '#27ae60'
+        });
+
+        this.toggleAuthModal(); // Cerrar el modal de autenticación
+        this.router.navigate(['/login']); // Redirigir al usuario a la página de inicio de sesión
       },
       (error) => {
         console.error('Error al registrar usuario', error);
+
+        // Mostrar SweetAlert de error
+        Swal.fire({
+          icon: 'error',
+          title: 'Error en el Registro',
+          text: error.error?.msg || 'Ocurrió un error al registrar el usuario. Inténtalo de nuevo.',
+          confirmButtonColor: '#e74c3c'
+        });
+
         this.errorMessage = error.error?.msg || 'Error al registrar usuario';
       }
     );
   }
+
 
   cerrarSesion() {
     this.authService.cerrarSesion();
@@ -179,7 +195,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       event.preventDefault();
     }
   }
-  
+
   navigateToCategory(category: string) {
     this.router.navigate(['/mercado'], { queryParams: { categoria: category } });
   }

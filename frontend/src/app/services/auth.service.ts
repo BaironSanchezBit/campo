@@ -10,8 +10,8 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  iniciarSesion(correo: string, contraseña: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { correo, contraseña });
+  iniciarSesion(correo: string, contrasena: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login`, { correo, contrasena });
   }
 
   registrarUsuario(usuario: any): Observable<any> {
@@ -28,6 +28,10 @@ export class AuthService {
 
   obtenerToken(): string | null {
     return localStorage.getItem('token');
+  }
+
+  confirmarCuenta(token: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/confirmar/${token}`);
   }
 
   obtenerUsuario(): any {

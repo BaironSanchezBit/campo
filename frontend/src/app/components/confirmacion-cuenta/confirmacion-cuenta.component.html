@@ -1,0 +1,17 @@
+<div *ngIf="exito === true" class="confirmacion-exitosa">
+    <div class="icono-exito">
+        <i class="fas fa-check-circle"></i>
+    </div>
+    <h2>¡Cuenta Verificada Exitosamente!</h2>
+    <p class="mensaje">{{ mensaje }}</p>
+    <p class="redireccion">Redirigiendo a tu perfil...</p>
+</div>
+
+<div *ngIf="exito === false" class="confirmacion-error">
+    <div class="icono-error">
+        <i class="fas fa-times-circle"></i>
+    </div>
+    <h2>Error al Verificar la Cuenta</h2>
+    <p class="mensaje">{{ mensaje }}</p>
+    <button (click)="irALogin()" class="btn-reintentar">Intentar de Nuevo</button>
+</div>

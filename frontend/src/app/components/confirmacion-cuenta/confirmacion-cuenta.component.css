@@ -1,0 +1,55 @@
+.confirmacion-exitosa, .confirmacion-error {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.icono-exito, .icono-error {
+    font-size: 50px;
+    margin-bottom: 15px;
+}
+
+.icono-exito {
+    color: #27ae60;
+}
+
+.icono-error {
+    color: #e74c3c;
+}
+
+.confirmacion-exitosa h2, .confirmacion-error h2 {
+    font-size: 24px;
+    color: #333;
+}
+
+.confirmacion-exitosa .mensaje, .confirmacion-error .mensaje {
+    font-size: 16px;
+    color: #555;
+    margin-top: 10px;
+}
+
+.confirmacion-exitosa .redireccion {
+    font-size: 14px;
+    color: #999;
+    margin-top: 15px;
+}
+
+.btn-reintentar {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 15px;
+}
+
+.btn-reintentar:hover {
+    background-color: #c0392b;
+}
