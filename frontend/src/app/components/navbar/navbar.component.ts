@@ -60,6 +60,17 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   }
 
   pagar() {
+    if (this.productosCarrito.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Carrito vacío',
+        text: 'No tienes productos en el carrito. Agrega productos antes de continuar.',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Aceptar'
+      });
+      return; // Sale de la función si el carrito está vacío
+    }
+
     if (this.isLoggedIn) {
       this.router.navigate(['/pasarela-pago']);  // Cambia '/pago' a la ruta de tu pasarela de pago
     } else {

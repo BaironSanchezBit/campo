@@ -6,6 +6,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { FooterComponent } from "../footer/footer.component";
 import { NavbarComponent } from "../navbar/navbar.component";
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-mercado',
@@ -66,7 +67,12 @@ export class MercadoComponent implements OnInit {
 
   addToCart(producto: any) {
     this.cartService.addToCart(producto);
-    alert('Producto agregado al carrito!');
+    Swal.fire({
+      icon: 'success',
+      title: 'Producto agregado al carrito',
+      showConfirmButton: false,
+      timer: 1500 // Desaparece después de 1.5 segundos
+    });
   }
 
   seleccionarCategoria(categoria: string) {
