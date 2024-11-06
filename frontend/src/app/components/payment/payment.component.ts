@@ -31,6 +31,9 @@ export class PaymentComponent implements OnInit {
   numeroCelular: string = '';
   ciudad: string = '';
 
+  // Método de pago seleccionado
+  selectedPaymentMethod: string | null = null;
+
   constructor(private router: Router, private cartService: CartService, private http: HttpClient) {
     this.loadCartItems();
   }
@@ -51,12 +54,52 @@ export class PaymentComponent implements OnInit {
   }
 
   processPayment() {
-    this.paymentStatus = 'Comprobando detalles de pago...';  // Cambiar el estado
-    this.sendConfirmationEmail();  // Enviar correo y manejar el estado después de la respuesta del backend
+    this.paymentStatus = 'Procesando...';
+
+    switch (this.selectedPaymentMethod) {
+      case 'creditCard':
+        this.processCreditCardPayment();
+        break;
+      case 'cashOnDelivery':
+        this.paymentStatus = 'Pago contra entrega seleccionado.';
+        this.completeOrder();
+        break;
+      case 'paypal':
+        this.paymentStatus = 'Redirigiendo a PayPal...';
+        this.redirectToPaypal();
+        break;
+      case 'bankTransfer':
+        this.paymentStatus = 'Procesando transferencia bancaria...';
+        this.completeOrder();
+        break;
+      default:
+        this.paymentStatus = 'Selecciona un método de pago válido.';
+    }
   }
 
   transform(value: number): string {
     return `$${value.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+  }
+
+  selectPaymentMethod(method: string) {
+    this.selectedPaymentMethod = method;
+  }
+
+  completeOrder() {
+    this.sendConfirmationEmail();
+  }
+
+  processCreditCardPayment() {
+    this.completeOrder();
+  }
+
+  redirectToPaypal() {
+    window.location.href = 'https://www.paypal.com/checkout';
+  }
+
+  // Regresar a selección de método de pago
+  resetPaymentMethod() {
+    this.selectedPaymentMethod = null;
   }
 
   isFormComplete(): boolean {

@@ -1,15 +1,50 @@
 <div class="flex flex-col justify-center items-center">
-    <form (ngSubmit)="processPayment()" #paymentForm="ngForm"
-        class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto my-10 p-8 bg-white shadow-lg rounded-lg">
 
-        <!-- Columna 1: Pago con tarjeta -->
-        <div class="payment-container col-span-1 bg-white p-6 shadow-lg rounded-lg">
+    <!-- Selección de Método de Pago (Paso 1) -->
+    <div *ngIf="!selectedPaymentMethod" class="payment-method-selection grid grid-cols-2 gap-6 max-w-md mx-auto my-10 p-8 bg-white shadow-lg rounded-lg">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center col-span-2">Seleccione su método de pago</h2>
+
+        <!-- Opción de Tarjeta de crédito/débito -->
+        <div class="payment-option cursor-pointer border border-gray-300 rounded-lg p-4 flex flex-col items-center hover:border-indigo-600" (click)="selectPaymentMethod('creditCard')">
+            <img src="assets/img/credit-card-icon.png" alt="Credit Card" class="w-12 mb-2">
+            <span class="text-gray-800 font-semibold text-center">Tarjeta de crédito/débito</span>
+        </div>
+
+        <!-- Opción de Pago contra entrega -->
+        <div class="payment-option cursor-pointer border border-gray-300 rounded-lg p-4 flex flex-col items-center hover:border-indigo-600" (click)="selectPaymentMethod('cashOnDelivery')">
+            <img src="assets/img/cash-icon.png" alt="Cash On Delivery" class="w-12 mb-2">
+            <span class="text-gray-800 font-semibold text-center">Contra entrega</span>
+        </div>
+
+        <!-- Opción de PayPal -->
+        <div class="payment-option cursor-pointer border border-gray-300 rounded-lg p-4 flex flex-col items-center hover:border-indigo-600" (click)="selectPaymentMethod('paypal')">
+            <img src="assets/img/paypal-icon.webp" alt="PayPal" class="w-12 mb-2">
+            <span class="text-gray-800 font-semibold text-center">PayPal</span>
+        </div>
+
+        <!-- Opción de Transferencia bancaria -->
+        <div class="payment-option cursor-pointer border border-gray-300 rounded-lg p-4 flex flex-col items-center hover:border-indigo-600" (click)="selectPaymentMethod('bankTransfer')">
+            <img src="assets/img/bank-icon.png" alt="Bank Transfer" class="w-12 mb-2">
+            <span class="text-gray-800 font-semibold text-center">Transferencia bancaria</span>
+        </div>
+    </div>
+
+    <!-- Formulario de Pago (Paso 2) -->
+    <form *ngIf="selectedPaymentMethod" (ngSubmit)="processPayment()" #paymentForm="ngForm" class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto my-10 p-8 bg-white shadow-lg rounded-lg">
+
+        <!-- Botón de regresar a selección de método de pago -->
+        <div class="col-span-3 flex justify-start mb-6">
+            <button (click)="resetPaymentMethod()" type="button" class="bg-gray-600 text-white p-2 rounded-lg hover:bg-gray-700 transition-all duration-300">
+                Cambiar método de pago
+            </button>
+        </div>
+
+        <!-- Formulario de Pago con Tarjeta de crédito/débito -->
+        <div *ngIf="selectedPaymentMethod === 'creditCard'" class="payment-container col-span-1 bg-white p-6 shadow-lg rounded-lg">
             <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Pago con tarjeta</h2>
 
-            <!-- Tarjeta de crédito visual -->
             <div class="card-container mb-6">
-                <div
-                    class="credit-card bg-indigo-600 text-white w-full max-w-sm mx-auto p-4 rounded-lg shadow-md relative">
+                <div class="credit-card bg-indigo-600 text-white w-full max-w-sm mx-auto p-4 rounded-lg shadow-md relative">
                     <div class="card-top flex justify-between items-center mb-4">
                         <img [src]="cardLogo" alt="Card Logo" class="w-12" *ngIf="cardLogo">
                         <span class="text-sm">Válido hasta {{ expiryDate || 'MM/YY' }}</span>
@@ -22,7 +57,6 @@
                 </div>
             </div>
 
-            <!-- Formulario de pago -->
             <div class="form-group mb-4">
                 <label for="cardNumber" class="block text-gray-600 text-sm mb-2">Número de tarjeta</label>
                 <input type="text" id="cardNumber" name="cardNumber" [(ngModel)]="cardNumber"
@@ -44,7 +78,7 @@
                     <label for="cvv" class="block text-gray-600 text-sm mb-2">CVV</label>
                     <input type="text" id="cvv" name="cvv" [(ngModel)]="cvv"
                         class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        placeholder="123" (keypress)="allowOnlyNumbers($event)"  required maxlength="3">
+                        placeholder="123" (keypress)="allowOnlyNumbers($event)" required maxlength="3">
                 </div>
             </div>
 
@@ -63,7 +97,25 @@
             </div>
         </div>
 
-        <!-- Columna 2: Información de envío -->
+        <!-- Pago contra entrega -->
+        <div *ngIf="selectedPaymentMethod === 'cashOnDelivery'" class="payment-container col-span-1 bg-white p-6 shadow-lg rounded-lg">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Pago contra entrega</h2>
+            <p class="text-gray-600 text-center">Realizarás el pago al momento de la entrega.</p>
+        </div>
+
+        <!-- Pago con PayPal -->
+        <div *ngIf="selectedPaymentMethod === 'paypal'" class="payment-container col-span-1 bg-white p-6 shadow-lg rounded-lg">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Pago con PayPal</h2>
+            <p class="text-gray-600 text-center">Serás redirigido a PayPal para completar el pago.</p>
+        </div>
+
+        <!-- Transferencia bancaria -->
+        <div *ngIf="selectedPaymentMethod === 'bankTransfer'" class="payment-container col-span-1 bg-white p-6 shadow-lg rounded-lg">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Transferencia bancaria</h2>
+            <p class="text-gray-600 text-center">Realiza una transferencia a nuestra cuenta bancaria. Recibirás los detalles después de confirmar el pedido.</p>
+        </div>
+
+        <!-- Información de Envío (obligatoria para todos los métodos) -->
         <div class="shipping-container col-span-1 bg-white p-6 shadow-lg rounded-lg">
             <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Información de envío</h2>
 
@@ -96,7 +148,7 @@
             </div>
         </div>
 
-        <!-- Columna 3: Tu compra -->
+        <!-- Columna de Compra -->
         <div class="cart-items-container col-span-1 bg-white p-6 shadow-lg rounded-lg">
             <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Tu compra</h2>
             <ul>
@@ -114,7 +166,7 @@
     </form>
 
     <!-- Botón de pago -->
-    <div class="flex justify-center w-64">
+    <div class="flex justify-center w-64" *ngIf="selectedPaymentMethod">
         <button type="submit" (click)="processPayment()"
             class="bg-indigo-600 text-white p-4 rounded-lg hover:bg-indigo-700 transition-all duration-300"
             [disabled]="!isFormComplete()">
@@ -122,7 +174,7 @@
         </button>
     </div>
 
-    <!-- Mostrar el estado del proceso de pago aquí -->
+    <!-- Estado del proceso de pago -->
     <div *ngIf="paymentStatus" class="alert alert-info text-center mt-2 bg-blue-100 text-blue-800 p-2 rounded-lg">
         {{ paymentStatus }}
     </div>

@@ -20,7 +20,8 @@ export class MercadoComponent implements OnInit {
   productosFiltrados: any[] = [];
   searchText: string = '';
   selectedCategory: string = 'Todas las categorías'; // Categoría seleccionada
-
+  mensajeNotificacion: string = '';
+  mostrarNotificacion: boolean = false;
   // Lista de categorías
   categories: string[] = [
     'Todas las categorías', 'Productos Frescos', 'Lácteos y Huevos', 'Carnes y Aves', 'Granos y Cereales',
@@ -67,12 +68,13 @@ export class MercadoComponent implements OnInit {
 
   addToCart(producto: any) {
     this.cartService.addToCart(producto);
-    Swal.fire({
-      icon: 'success',
-      title: 'Producto agregado al carrito',
-      showConfirmButton: false,
-      timer: 1500 // Desaparece después de 1.5 segundos
-    });
+    this.mensajeNotificacion = 'Producto agregado al carrito!';
+    this.mostrarNotificacion = true;
+  
+    // Oculta la notificación después de 2 segundos
+    setTimeout(() => {
+      this.mostrarNotificacion = false;
+    }, 2000);
   }
 
   seleccionarCategoria(categoria: string) {
