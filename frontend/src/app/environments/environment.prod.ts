@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://arribaelcampo.shop',
+    apiUrl: 'https://arribaelcampo.store',
     anotherConfig: 'someValueProd'
 };  

@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { FooterComponent } from "../footer/footer.component";
 import { NavbarComponent } from "../navbar/navbar.component";
 import Swal from 'sweetalert2';
+import { AuthService } from '../../services/auth.service';
+import { SharedService } from '../../services/shared.service';
 
 @Component({
   selector: 'app-mercado',
@@ -30,7 +32,7 @@ export class MercadoComponent implements OnInit {
     'Productos Naturales y Orgánicos', 'Productos de Temporada'
   ];
 
-  constructor(private http: HttpClient, private cartService: CartService,
+  constructor(private sharedService: SharedService, private authService: AuthService, private http: HttpClient, private cartService: CartService,
     private route: ActivatedRoute) { }
 
   ngOnInit() {
@@ -41,7 +43,7 @@ export class MercadoComponent implements OnInit {
   }
 
   obtenerProductos() {
-    this.http.get('http://localhost:4000/api/productos').subscribe((data: any) => {
+    this.http.get('https://arribaelcampo.store/api/productos').subscribe((data: any) => {
       // Solo obtener productos disponibles
       this.productos = data.filter((producto: any) => producto.estado === 'disponible');
       this.filtrarProductos(); // Aplicar filtro después de cargar los productos
@@ -49,7 +51,7 @@ export class MercadoComponent implements OnInit {
       console.error('Error al obtener productos:', error);
     });
   }
-  
+
   filtrarProductos() {
     const texto = this.searchText.toLowerCase();
     this.productosFiltrados = this.productos.filter(producto =>
@@ -59,7 +61,7 @@ export class MercadoComponent implements OnInit {
   }
 
   getFotoUrl(foto: string): string {
-    return `http://localhost:4000/uploads/${foto}`;
+    return `https://arribaelcampo.store/uploads/${foto}`;
   }
 
   transform(value: number): string {
@@ -67,10 +69,15 @@ export class MercadoComponent implements OnInit {
   }
 
   addToCart(producto: any) {
+    if (!this.authService.isLoggedIn()) { // Verificar si el usuario está autenticado
+      this.sharedService.activarAuthModal(); // Activar el modal de autenticación
+      return;
+    }
+
     this.cartService.addToCart(producto);
     this.mensajeNotificacion = 'Producto agregado al carrito!';
     this.mostrarNotificacion = true;
-  
+
     // Oculta la notificación después de 2 segundos
     setTimeout(() => {
       this.mostrarNotificacion = false;

@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
+import { SharedService } from '../../services/shared.service';
 
 @Component({
   selector: 'app-inicio',
@@ -18,8 +20,10 @@ export class InicioComponent {
   usuario: any = null;  // Variable para almacenar los datos del usuario
   isLoggedIn = false;
   productos: any[] = [];
+  mensajeNotificacion: string = '';
+  mostrarNotificacion: boolean = false;
   
-  constructor(private http: HttpClient, private cartService: CartService) { }
+  constructor(private sharedService: SharedService, private authService: AuthService,private http: HttpClient, private cartService: CartService) { }
 
   ngOnInit(): void {
     const usuarioGuardado = localStorage.getItem('usuario');
@@ -33,7 +37,7 @@ export class InicioComponent {
   }
 
   obtenerProductos() {
-    this.http.get('http://localhost:4000/api/productos').subscribe((data: any) => {
+    this.http.get('https://arribaelcampo.store/api/productos').subscribe((data: any) => {
       // Filtrar productos con estado 'disponible' y tomar los últimos 6
       this.productos = data
         .filter((producto: any) => producto.estado === 'disponible') // Filtra los productos disponibles
@@ -45,7 +49,7 @@ export class InicioComponent {
   
 
   getFotoUrl(foto: string): string {
-    return `http://localhost:4000/uploads/${foto}`;
+    return `https://arribaelcampo.store/uploads/${foto}`;
   }
 
   transform(value: number): string {
@@ -53,7 +57,18 @@ export class InicioComponent {
   }
 
   addToCart(producto: any) {
+    if (!this.authService.isLoggedIn()) { // Verificar si el usuario está autenticado
+      this.sharedService.activarAuthModal(); // Activar el modal de autenticación
+      return;
+    }
+
     this.cartService.addToCart(producto);
-    alert('Producto agregado al carrito!');
+    this.mensajeNotificacion = 'Producto agregado al carrito!';
+    this.mostrarNotificacion = true;
+
+    // Oculta la notificación después de 2 segundos
+    setTimeout(() => {
+      this.mostrarNotificacion = false;
+    }, 2000);
   }
 }

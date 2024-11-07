@@ -19,6 +19,8 @@ import { TransportadorComponent } from './components/transportador/transportador
 import { PedidosTransportadoraComponent } from './components/pedidos-transportadora/pedidos-transportadora.component';
 import { ConfirmacionCuentaComponent } from './components/confirmacion-cuenta/confirmacion-cuenta.component';
 import { AdminComponent } from './components/admin/admin.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { ProductoDetalleComponent } from './components/producto-detalle/producto-detalle.component';
 
 export const routes: Routes = [
     { path: '', component: InicioComponent },
@@ -41,5 +43,7 @@ export const routes: Routes = [
     { path: 'terminos-condiciones', component: TerminosCondicionesComponent },
     { path: 'confirmar/:token', component: ConfirmacionCuentaComponent },
     { path: 'admin', component: AdminComponent },
+    { path: 'reset-password/:token', component: ResetPasswordComponent },
+    { path: 'producto/:id', component: ProductoDetalleComponent },
     { path: '', redirectTo: '', pathMatch: 'full' }
 ];

@@ -35,3 +35,41 @@
     z-index: 1000;
     transition: opacity 0.3s ease;
 }
+
+
+
+@media screen and (min-width: 300px) and (max-width: 500px) {
+    .buscador{
+        display: flex;
+        flex-direction: column;
+        padding: 0 5%;
+    }
+
+    .buscador select{
+        width: 100%;
+        margin: 0;
+    }
+
+    .buscador input{
+        margin-top: 5px;
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 600px) and (max-width: 700px) {
+    .buscador{
+        display: flex;
+        flex-direction: column;
+        padding: 0 5%;
+    }
+
+    .buscador select{
+        width: 100%;
+        margin: 0;
+    }
+
+    .buscador input{
+        margin-top: 5px;
+        width: 100%;
+    }
+}

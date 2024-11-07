@@ -8,24 +8,27 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: 'no.reply.arribaelcampo@gmail.com',
         pass: 'vbdj zouh fppj loki'
-    }
+    },
+    logger: true,
+    debug: true
 });
 
-// Función para enviar correos utilizando Promesas
-function sendMail(mailOptions) {
-    return new Promise((resolve, reject) => {
-        if (!mailOptions.to || mailOptions.to.trim() === '') {
-            return reject(new Error('No recipients defined')); // Validación adicional
-        }
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                return reject(error);
-            }
-            resolve(info);
-        });
-    });
+// Función para enviar correos utilizando Promesas
+async function sendMail(mailOptions) {
+    try {
+        if (!mailOptions.to || mailOptions.to.trim() === '') {
+            throw new Error('No recipients defined');
+        }
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Correo enviado con éxito:', info.response);
+        return info;
+    } catch (error) {
+        console.error('Error al enviar el correo:', error);
+        throw error;
+    }
 }
+
 
 const enviarCorreosCambioEstado = async (pedido, nuevoEstado) => {
     try {
@@ -47,7 +50,7 @@ const enviarCorreosCambioEstado = async (pedido, nuevoEstado) => {
                         <p style="font-size: 16px; color: #555555;">Estimado/a ${comprador.nombres},</p>
                         <p style="font-size: 16px; color: #555555;">Nos complace informarte que tu pedido con ID <strong>${pedido.pedidoId}</strong> está ahora ${nuevoEstado}.</p>
                         <p style="text-align: center; margin-top: 20px;">
-                            <a href="http://localhost:4200/seguimiento/${pedido.pedidoId}" style="background-color: #27ae60; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Seguir pedido</a>
+                            <a href="https://arribaelcampo.store/seguimiento/${pedido.pedidoId}" style="background-color: #27ae60; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Seguir pedido</a>
                         </p>
                         <p style="font-size: 14px; color: #aaaaaa; text-align: center;">Arriba el Campo - Promoviendo la agricultura local</p>
                     </div>

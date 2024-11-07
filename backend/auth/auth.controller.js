@@ -2,6 +2,7 @@ const axios = require('axios');
 const Usuario = require('./auth.model');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const bcrypt = require('bcryptjs');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -50,7 +51,7 @@ exports.registrarUsuario = async (req, res) => {
                         <p style="font-size: 16px; color: #555555;">Gracias por registrarte en Arriba el Campo. Para activar tu cuenta y empezar a disfrutar de todos los beneficios, confirma tu correo electrónico haciendo clic en el botón a continuación:</p>
                         
                         <div style="text-align: center; margin-top: 20px;">
-                            <a href="http://localhost:4200/confirmar/${tokenVerificacion}" style="background-color: #27ae60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-size: 16px;">Confirmar Cuenta</a>
+                            <a href="https://arribaelcampo.store/confirmar/${tokenVerificacion}" style="background-color: #27ae60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-size: 16px;">Confirmar Cuenta</a>
                         </div>
                         
                         <p style="font-size: 16px; color: #555555; margin-top: 20px;">Este enlace expirará en 5 minutos. Si no solicitaste esta confirmación, puedes ignorar este correo.</p>
@@ -136,10 +137,9 @@ exports.iniciarSesion = async (req, res) => {
             expiresIn: '1h'
         });
 
-        // Devolver token y usuario
         res.json({ token, user: usuario });
     } catch (error) {
-        console.error(error);
+        console.error('Error en el inicio de sesión:', error);
         res.status(500).send('Error en el servidor');
     }
 };
@@ -188,5 +188,68 @@ exports.eliminarUsuario = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};
+
+exports.solicitarRecuperacionContrasena = async (req, res) => {
+    const { correo } = req.body;
+
+    try {
+        // Verificar si el usuario existe
+        const usuario = await Usuario.findOne({ correo });
+        if (!usuario) {
+            return res.status(404).json({ msg: 'No existe una cuenta con este correo' });
+        }
+
+        // Generar un token para el enlace de recuperación de contraseña (válido por 1 hora)
+        const tokenRecuperacion = jwt.sign({ id: usuario._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        // Opciones de correo
+        const mailOptions = {
+            from: 'no.reply.arribaelcampo@gmail.com',
+            to: correo,
+            subject: 'Recuperación de contraseña - Arriba el Campo',
+            html: `
+                <p>Hola ${usuario.nombres},</p>
+                <p>Recibimos una solicitud para restablecer tu contraseña. Haz clic en el enlace a continuación para restablecerla:</p>
+                <a href="https://arribaelcampo.store/reset-password/${encodeURIComponent(tokenRecuperacion)}">Restablecer Contraseña</a>
+                <p>Si no solicitaste el cambio, puedes ignorar este correo.</p>
+            `
+        };
+
+
+        // Enviar correo de recuperación
+        await transporter.sendMail(mailOptions);
+
+        res.json({ msg: 'Correo de recuperación enviado. Revisa tu bandeja de entrada.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: 'Error al procesar la solicitud de recuperación.' });
+    }
+};
+
+exports.resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Buscar al usuario por su ID
+        const usuario = await Usuario.findById(decoded.id);
+        if (!usuario) {
+            return res.status(404).json({ msg: 'Usuario no encontrado' });
+        }
+
+        // Actualizar la contraseña (sin encriptarla aquí si ya está siendo manejada por el 'pre' hook)
+        usuario.contrasena = newPassword;
+        await usuario.save();
+
+        res.json({ msg: 'Contraseña actualizada con éxito' });
+    } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+            return res.status(400).json({ msg: 'El enlace de restablecimiento ha expirado. Solicita uno nuevo.' });
+        }
+        console.error(error);
+        res.status(500).json({ msg: 'Error al restablecer la contraseña' });
     }
 };

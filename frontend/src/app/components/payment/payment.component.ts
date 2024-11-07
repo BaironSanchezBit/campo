@@ -48,32 +48,107 @@ export class PaymentComponent implements OnInit {
     }
   }
 
+  processPayPalPayment() {
+    if (this.direccionEnvio && this.personaRecibe && this.numeroCelular && this.ciudad) {
+      this.paymentStatus = 'Procesando tu pago con PayPal...';
+
+      // Simulación de procesamiento de pago
+      setTimeout(() => {
+        this.paymentStatus = 'Pago con PayPal confirmado.';
+        this.createOrder('paypal').then(() => {
+          // Lógica después de que el pedido se haya creado correctamente
+        }).catch((error: any) => {
+          console.error('Error al crear el pedido:', error);
+        });
+      }, 2000);
+    } else {
+      this.paymentStatus = 'Por favor, completa todos los campos.';
+    }
+  }
+
+  createOrder(paymentMethod: string): Promise<void> {
+    
+    if(this.email === '') {
+    this.email = this.usuario.correo;
+  }
+
+    const orderData = {
+      email: this.email,
+      direccionEnvio: this.direccionEnvio,
+      personaRecibe: this.personaRecibe,
+      numeroCelular: this.numeroCelular,
+      ciudad: this.ciudad,
+      paymentMethod: this.selectedPaymentMethod, // Asegúrate de que esta línea esté incluida
+      productos: this.items,
+      total: this.total,
+      usuarioId: this.usuario?._id // Incluye el `usuarioId` también
+    };
+
+    // Retornar una Promesa para manejar el resultado de la solicitud
+    return new Promise((resolve, reject) => {
+      this.http.post('https://arribaelcampo.store/api/pagos/procesar-pago', orderData)
+        .subscribe(
+          () => {
+            this.paymentStatus = 'Pedido creado exitosamente.';
+            resolve();
+          },
+          error => {
+            this.paymentStatus = 'Error al crear el pedido.';
+            reject(error);
+          }
+        );
+    });
+  }
+
   loadCartItems() {
     this.items = this.cartService.getItems();
     this.total = this.items.reduce((acc, item) => acc + (item.precio * item.cantidad), 0);
   }
 
   processPayment() {
+    if (!this.usuario?._id) {
+      this.paymentStatus = 'Error: Usuario no identificado. Inicia sesión nuevamente.';
+      return;
+    }
     this.paymentStatus = 'Procesando...';
 
-    switch (this.selectedPaymentMethod) {
-      case 'creditCard':
-        this.processCreditCardPayment();
-        break;
-      case 'cashOnDelivery':
-        this.paymentStatus = 'Pago contra entrega seleccionado.';
-        this.completeOrder();
-        break;
-      case 'paypal':
-        this.paymentStatus = 'Redirigiendo a PayPal...';
-        this.redirectToPaypal();
-        break;
-      case 'bankTransfer':
-        this.paymentStatus = 'Procesando transferencia bancaria...';
-        this.completeOrder();
-        break;
-      default:
-        this.paymentStatus = 'Selecciona un método de pago válido.';
+    if (this.selectedPaymentMethod) {
+      this.createOrder(this.selectedPaymentMethod).then(() => {
+        // Simulación del proceso de pago según el método seleccionado
+        switch (this.selectedPaymentMethod) {
+          case 'creditCard':
+            this.paymentStatus = 'Pago con tarjeta de crédito/débito procesado.';
+            this.completeOrder();
+            break;
+          case 'cashOnDelivery':
+            this.paymentStatus = 'Pago contra entrega seleccionado.';
+            this.completeOrder();
+            break;
+          case 'paypal':
+            this.paymentStatus = 'Simulando redirección a PayPal...';
+            // Simulación de espera
+            setTimeout(() => {
+              this.paymentStatus = 'Pago con PayPal procesado.';
+              this.completeOrder();
+            }, 2000);
+            break;
+          case 'bankTransfer':
+            this.paymentStatus = 'Procesando transferencia bancaria...';
+            // Simulación de espera
+            setTimeout(() => {
+              this.paymentStatus = 'Pago con transferencia bancaria procesado.';
+              this.completeOrder();
+            }, 2000);
+            break;
+          default:
+            this.paymentStatus = 'Selecciona un método de pago válido.';
+        }
+      }).catch(error => {
+        this.paymentStatus = 'Error al crear el pedido.';
+        console.error('Error:', error);
+      });
+    } else {
+      this.paymentStatus = 'Por favor, selecciona un método de pago.';
     }
   }
 
@@ -103,22 +178,41 @@ export class PaymentComponent implements OnInit {
   }
 
   isFormComplete(): boolean {
-    return this.cardNumber !== '' &&
-      this.expiryDate !== '' &&
-      this.cvv !== '' &&
-      this.name !== '' &&
-      this.email !== '' &&
-      this.direccionEnvio !== '' &&
-      this.personaRecibe !== '' &&
-      this.numeroCelular !== '' &&
-      this.ciudad !== '';
+    if (this.selectedPaymentMethod === 'creditCard') {
+      return this.cardNumber !== '' &&
+        this.expiryDate !== '' &&
+        this.cvv !== '' &&
+        this.name !== '' &&
+        this.email !== '' &&
+        this.direccionEnvio !== '' &&
+        this.personaRecibe !== '' &&
+        this.numeroCelular !== '' &&
+        this.ciudad !== '';
+    }
+
+    // Validaciones mínimas para otros métodos de pago
+    if (this.selectedPaymentMethod === 'cashOnDelivery' ||
+      this.selectedPaymentMethod === 'paypal' ||
+      this.selectedPaymentMethod === 'bankTransfer') {
+      return this.direccionEnvio !== '' &&
+        this.personaRecibe !== '' &&
+        this.numeroCelular !== '' &&
+        this.ciudad !== '';
+    }
+
+    return false;
   }
 
   sendConfirmationEmail() {
-    this.paymentStatus = 'Creando pedido...';  // Actualizar estado antes de la solicitud
+    this.paymentStatus = 'Creando pedido...';
+
+    if(this.email === '') {
+      this.email = this.usuario.correo;
+    }
 
     const emailPayload = {
       email: this.email,
+      paymentMethod: this.selectedPaymentMethod,
       productos: this.items.map(item => ({
         _id: item._id,
         cantidad: item.cantidad,
@@ -126,24 +220,24 @@ export class PaymentComponent implements OnInit {
         vendedorId: item.vendedorId
       })),
       total: this.total,
-      usuarioId: this.usuario._id,
+      usuarioId: this.usuario?._id,  // Asegúrate de que usuarioId esté presente
       direccionEnvio: this.direccionEnvio,
       personaRecibe: this.personaRecibe,
       numeroCelular: this.numeroCelular,
       ciudad: this.ciudad
     };
 
-    this.http.post('http://localhost:4000/api/pagos/procesar-pago', emailPayload)
+    this.http.post('https://arribaelcampo.store/api/pagos/procesar-pago', emailPayload)
       .subscribe(
         response => {
           console.log('Pedido creado y correos enviados correctamente', response);
-          this.paymentStatus = 'Pedido creado y correos enviados con éxito.';  // Actualizar estado cuando todo se complete
-          this.router.navigate(['/success']);  // Redirigir al éxito si todo fue bien
+          this.paymentStatus = 'Pedido creado y correos enviados con éxito.';
+          this.router.navigate(['/success']);
         },
         error => {
           console.error('Error enviando correos y creando pedido', error);
-          this.paymentStatus = 'Error al crear el pedido. Intenta nuevamente.';  // Actualizar estado en caso de error
-          this.router.navigate(['/cancel']);  // Redirigir al fallo si hubo un error
+          this.paymentStatus = 'Error al crear el pedido. Intenta nuevamente.';
+          this.router.navigate(['/cancel']);
         }
       );
   }

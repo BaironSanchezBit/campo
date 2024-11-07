@@ -29,7 +29,7 @@ export class SeguimientoComponent implements OnInit {
   }
 
   obtenerDetallesPedido(id: string) {
-    this.http.get(`http://localhost:4000/api/pedido/getPedidoId/${id}`)  // Cambia la URL para que use pedidoId
+    this.http.get(`https://arribaelcampo.store/api/pedido/getPedidoId/${id}`)  // Cambia la URL para que use pedidoId
       .subscribe((data: any) => {
         this.pedido = data;
         console.log(data)

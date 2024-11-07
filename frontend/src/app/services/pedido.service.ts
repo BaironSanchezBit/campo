@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class PedidoService {
-  private baseUrl = 'http://localhost:4000/api/pedido'; // Cambia la URL según tu backend
+  private baseUrl = 'https://arribaelcampo.store/api/pedido'; // Cambia la URL según tu backend
 
   constructor(private http: HttpClient) { }
 

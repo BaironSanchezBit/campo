@@ -1,0 +1,36 @@
+<app-navbar></app-navbar>
+
+<div *ngIf="producto" class="max-w-4xl mx-auto my-24 p-4 border rounded-lg shadow-lg">
+    <div class="flex flex-col md:flex-row">
+        <!-- Carrusel de imágenes -->
+        <div class="flex-shrink-0 w-full md:w-1/2">
+            <img [src]="getFotoUrl(fotos[fotoActualIndex])" alt="Foto principal de {{ producto.titulo }}"
+                class="imagen-principal" />
+            <div class="flex justify-center mt-4 space-x-2">
+                <img *ngFor="let foto of fotos; let i = index" [src]="getFotoUrl(foto)"
+                    alt="Foto {{ i + 1 }} de {{ producto.titulo }}" (click)="cambiarFoto(i)" class="imagen-miniatura"
+                    [ngClass]="{ 'border-blue-500': i === fotoActualIndex }" />
+            </div>
+        </div>
+
+        <!-- Detalles del producto -->
+        <div class="flex-grow mt-6 md:mt-0 md:ml-6">
+            <h2 class="text-2xl font-bold mb-2">{{ producto.titulo }}</h2>
+            <p class="text-gray-600 mb-2">{{ producto.descripcion }}</p>
+            <p class="text-gray-600">Publicado por: {{ producto.usuarioId.nombres }} {{ producto.usuarioId.apellidos }}
+            </p>
+            <p class="text-gray-600 mb-4">Ciudad: {{ producto.ciudad }}</p>
+            <p class="text-3xl font-bold mb-4">{{ transform(producto.precio) }}</p>
+            <button (click)="addToCart(producto)"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Agregar al Carrito
+            </button>
+        </div>
+    </div>
+</div>
+
+<app-footer></app-footer>
+
+<div *ngIf="mostrarNotificacion" class="notificacion">
+    {{ mensajeNotificacion }}
+</div>

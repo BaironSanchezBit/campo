@@ -6,7 +6,7 @@
                 Arriba el Campo
             </span>
         </a>
-        <button data-collapse-toggle="navbar-dropdown" type="button"
+        <button (click)="toggleMenu()" type="button"
             class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
             aria-controls="navbar-dropdown" aria-expanded="false">
             <span class="sr-only">Open main menu</span>
@@ -15,7 +15,7 @@
                     d="M1 1h15M1 7h15M1 13h15" />
             </svg>
         </button>
-        <div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
+        <div [ngClass]="{'hidden': !isMenuOpen}" class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
             <ul
                 class="flex flex-col items-center font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                 <li>
@@ -130,7 +130,7 @@
                         publicaciones</a>
                 </li>
                 <ng-container *ngIf="!isLoggedIn">
-                    <li>
+                    <li class="iniciar">
                         <button type="button" (click)="toggleAuthModal(false)"
                             class="text-white bg-gray-700 hover:bg-gray-800 mr-2 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
                             Iniciar Sesión
@@ -179,7 +179,7 @@
                         </div>
                     </li>
                 </ng-container>
-                <li *ngIf="usuario?.rol === 'comprador' || !isLoggedIn">
+                <li class="carrito" *ngIf="usuario?.rol === 'comprador' || !isLoggedIn">
                     <button type="button" (click)="toggleCart()"
                         class="relative inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         <i class="fa-solid fa-cart-shopping"></i>
@@ -199,7 +199,7 @@
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                    {{ isRegistering ? 'Registrar cuenta' : 'Iniciar Sesión' }}
+                    {{ isRegistering ? 'Registrar cuenta' : isRecoveringPassword ? 'Recuperar Contraseña' : 'Iniciar Sesión' }}
                 </h3>
                 <button type="button"
                     class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -213,7 +213,7 @@
                 </button>
             </div>
             <div class="p-4 md:p-5">
-                <form *ngIf="!isRegistering" (ngSubmit)="onIniciarSesion()" class="space-y-4">
+                <form *ngIf="!isRegistering && !isRecoveringPassword" (ngSubmit)="onIniciarSesion()" class="space-y-4">
                     <!-- Formulario de inicio de sesión -->
                     <div>
                         <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Correo
@@ -230,7 +230,7 @@
                             placeholder="••••••••" />
                     </div>
                     <div class="flex justify-between">
-                        <a href="#" class="text-sm text-blue-700 hover:underline dark:text-blue-500">Olvidaste tu
+                        <a (click)="toggleRecoveryPassword()" class="text-sm text-blue-700 hover:underline dark:text-blue-500 cursor-pointer">Olvidaste tu
                             contraseña?</a>
                     </div>
                     <div *ngIf="errorMessage" class="errorMessage">
@@ -240,8 +240,8 @@
                         class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Inicie
                         sesión en su cuenta</button>
                     <div class="text-sm font-medium text-gray-500 dark:text-gray-300">
-                        ¿No tienes cuenta? <a href="#" (click)="toggleRegistering()"
-                            class="text-blue-700 hover:underline dark:text-blue-500">Crear cuenta</a>
+                        ¿No tienes cuenta? <a (click)="toggleRegistering()"
+                            class="text-blue-700 hover:underline dark:text-blue-500 cursor-pointer">Crear cuenta</a>
                     </div>
                 </form>
 
@@ -352,8 +352,29 @@
                         class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Crear
                         cuenta</button>
                     <div class="text-sm font-medium text-gray-500 dark:text-gray-300">
-                        ¿Ya tienes cuenta? <a href="#" (click)="toggleRegistering()"
-                            class="text-blue-700 hover:underline dark:text-blue-500">Iniciar sesión</a>
+                        ¿Ya tienes cuenta? <a (click)="toggleRegistering()"
+                            class="text-blue-700 hover:underline dark:text-blue-500 cursor-pointer">Iniciar sesión</a>
+                    </div>
+                </form>
+                <!-- Formulario de recuperación de contraseña -->
+                <form *ngIf="isRecoveringPassword" (ngSubmit)="onRecoverPassword()" class="space-y-4">
+                    <div>
+                        <label for="recoveryEmail" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Correo electrónico:
+                        </label>
+                        <input type="email" name="recoveryEmail" id="recoveryEmail" [(ngModel)]="recoveryEmail" required
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            placeholder="nombre@ejemplo.com" />
+                    </div>
+                    <button type="submit"
+                        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        Enviar enlace de recuperación
+                    </button>
+                    <div *ngIf="recoveryMessage" class="text-sm text-green-600 mt-2">{{ recoveryMessage }}</div>
+                    <div *ngIf="recoveryErrorMessage" class="text-sm text-red-600 mt-2">{{ recoveryErrorMessage }}</div>
+                    <div class="text-sm font-medium text-gray-500 dark:text-gray-300">
+                        ¿Recordaste tu contraseña? <a (click)="toggleRecoveryPassword()"
+                            class="text-blue-700 hover:underline dark:text-blue-500 cursor-pointer">Inicia sesión</a>
                     </div>
                 </form>
             </div>
@@ -404,7 +425,7 @@
                                                         <h3>{{ producto.titulo }}</h3>
                                                         <p class="ml-4">{{ transform(producto.precio) }}</p>
                                                     </div>
-                                                    <p class="mt-1 text-sm text-gray-500">{{ producto.descripcion }}</p>
+                                                    <p class="mt-1 text-sm text-gray-500">{{ producto.descripcion | slice:0:100 }}{{ producto.descripcion.length > 100 ? '...' : '' }}</p>
                                                 </div>
 
                                                 <!-- Incremento/decremento de cantidad -->
@@ -442,7 +463,8 @@
                             <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
                                 <p>
                                     o
-                                    <button type="button" routerLink="/mercado" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    <button type="button" routerLink="/mercado"
+                                        class="font-medium text-indigo-600 hover:text-indigo-500">
                                         Continuar Comprando
                                         <span aria-hidden="true"> &rarr;</span>
                                     </button>

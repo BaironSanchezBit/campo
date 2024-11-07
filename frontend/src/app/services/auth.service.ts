@@ -6,7 +6,7 @@ import { Observable, throwError } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:4000/api/auth';
+  private apiUrl = 'https://arribaelcampo.store/api/auth';
 
   constructor(private http: HttpClient) { }
 
@@ -16,6 +16,10 @@ export class AuthService {
 
   registrarUsuario(usuario: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/registro`, usuario);
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.obtenerToken();
   }
 
   guardarToken(token: string): void {
@@ -72,5 +76,14 @@ export class AuthService {
   obtenerUsuarios(): Observable<any> {
     const headers = this.obtenerHeaders();
     return this.http.get(`${this.apiUrl}/usuarios`, { headers });
+  }
+
+  recoverPassword(email: string) {
+    return this.http.post(`${this.apiUrl}/solicitar-recuperacion`, { correo: email });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    const body = { token, newPassword };
+    return this.http.post(`${this.apiUrl}/reset-password`, body);
   }
 }

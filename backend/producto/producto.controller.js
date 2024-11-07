@@ -82,13 +82,35 @@ exports.obtenerProductosPorUsuario = async (req, res) => {
     }
 };
 
-
-// Actualizar un producto
 exports.actualizarProducto = async (req, res) => {
     const { id } = req.params;
-    const { titulo, descripcion, tipo, precio, cantidadDisponible, ciudad, fotos, estado } = req.body;
+    const { titulo, descripcion, tipo, precio, cantidadDisponible, ciudad, estado, fotosExistentes } = req.body;
 
     try {
+        // Manejar archivos subidos con multer
+        let nuevasFotos = [];
+        if (req.files && req.files['nuevasFotos']) {
+            nuevasFotos = req.files['nuevasFotos'].map(file => file.filename);
+        }
+
+        let fotosFinales = [];
+        if (fotosExistentes) {
+            if (typeof fotosExistentes === 'string') {
+                try {
+                    fotosFinales = JSON.parse(fotosExistentes);
+                } catch (error) {
+                    console.error('Error al parsear fotosExistentes:', error);
+                    fotosFinales = [];
+                }
+            } else if (Array.isArray(fotosExistentes)) {
+                fotosFinales = fotosExistentes;
+            }
+        }
+
+        // Combina las fotos existentes con las nuevas
+        fotosFinales = fotosFinales.concat(nuevasFotos);
+
+        // Actualiza el producto con la nueva información
         const productoActualizado = await Producto.findByIdAndUpdate(id, {
             titulo,
             descripcion,
@@ -96,8 +118,8 @@ exports.actualizarProducto = async (req, res) => {
             precio,
             cantidadDisponible,
             ciudad,
-            fotos,
-            estado
+            estado,
+            fotos: fotosFinales  // Aquí se usa la combinación de fotos
         }, { new: true });
 
         if (!productoActualizado) {
@@ -106,12 +128,20 @@ exports.actualizarProducto = async (req, res) => {
 
         res.json(productoActualizado);
     } catch (error) {
-        console.error(error);
+        console.error('Error al actualizar el producto:', error);
         res.status(500).json({ message: 'Error al actualizar el producto' });
     }
 };
 
-// Eliminar un producto
+const eliminarArchivo = (ruta) => {
+    fs.unlink(ruta, (error) => {
+        if (error) {
+            console.error(`Error al eliminar el archivo ${ruta}:`, error);
+        } else {
+        }
+    });
+};
+
 exports.eliminarProducto = async (req, res) => {
     const { id } = req.params;
 
@@ -126,12 +156,10 @@ exports.eliminarProducto = async (req, res) => {
         if (producto.fotos && producto.fotos.length > 0) {
             producto.fotos.forEach(foto => {
                 const fotoPath = path.join(__dirname, '../../uploads', foto); // Ruta completa del archivo
-
-                // Verificar si el archivo existe antes de eliminarlo
                 if (fs.existsSync(fotoPath)) {
-                    fs.unlinkSync(fotoPath); // Eliminar el archivo
+                    eliminarArchivo(fotoPath); // Usar función asíncrona
                 } else {
-                    console.log(`Foto no encontrada: ${fotoPath}`); // La ruta de la foto no existe
+                    console.log(`Foto no encontrada: ${fotoPath}`);
                 }
             });
         }

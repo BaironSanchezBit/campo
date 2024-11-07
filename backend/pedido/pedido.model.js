@@ -9,24 +9,36 @@ const pedidoSchema = new Schema({
         {
             productoId: { type: Schema.Types.ObjectId, ref: 'Producto', required: true },
             vendedorId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
-            cantidad: { type: Number, required: true },
-            precio: { type: Number, required: true },
+            cantidad: { type: Number, required: true, min: 1 },  // Validación de cantidad mínima
+            precio: { type: Number, required: true, min: 0 },  // Validación de precio mínimo
             estado: { type: String, enum: ['Creado', 'Camino a la empresa transportadora', 'Entregado a empresa transportadora'], default: 'Creado' },
             fechaActualizacion: { type: Date, default: Date.now },
-            observaciones: { type: String } // Nuevo campo para observaciones
+            observaciones: { type: String, trim: true }  // Se eliminan espacios en blanco adicionales
         }
     ],
-    total: { type: Number, required: true },  // Total del pedido
-    estadoGeneral: { type: String, enum: ['Creado', 'Productos camino a la empresa transportadora', 'Productos en la empresa transportadora', 'Comprobando productos', 'Camino a tu dirección', 'Entregado'], default: 'Creado' },  // Estado general del pedido
+    total: { type: Number, required: true, min: 0 },  // Total del pedido
+    estadoGeneral: {
+        type: String,
+        enum: [
+            'Creado',
+            'Productos camino a la empresa transportadora',
+            'Productos en la empresa transportadora',
+            'Comprobando productos',
+            'Camino a tu dirección',
+            'Entregado'
+        ],
+        default: 'Creado'
+    },  // Estado general del pedido
     fechaCreacion: { type: Date, default: Date.now },  // Fecha de creación del pedido
     fechaActualizacion: { type: Date, default: Date.now },  // Fecha de la última actualización del pedido
     fechaEntregaEstimada: { type: Date },  // Fecha estimada de entrega
-    transportadorId: { type: String },
+    transportadorId: { type: String, default: null },  // Transportador opcional
     // Nuevos campos para información del envío
-    direccionEnvio: { type: String, required: true },  // Dirección de envío
-    personaRecibe: { type: String, required: true },  // Nombre de la persona que recibe
-    numeroCelular: { type: String, required: true },  // Número de celular
-    ciudad: { type: String, required: true }  // Ciudad de destino
+    direccionEnvio: { type: String, required: true, trim: true },  // Dirección de envío
+    personaRecibe: { type: String, required: true, trim: true },  // Nombre de la persona que recibe
+    numeroCelular: { type: String, required: true, trim: true },  // Número de celular
+    ciudad: { type: String, required: true, trim: true },  // Ciudad de destino
+    paymentMethod: { type: String, required: true }
 });
 
 // Pre-save hook para generar un pedidoId corto

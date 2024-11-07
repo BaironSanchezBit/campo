@@ -9,6 +9,149 @@
             class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
     </div>
 
+    <form *ngIf="productoSeleccionado" class="w-full my-12 p-6 bg-white shadow-md rounded-lg space-y-6"
+        (ngSubmit)="onUpdateProduct()">
+        <h2 class="text-xl font-semibold text-gray-700">Editar Producto</h2>
+
+        <!-- Tipo de Producto -->
+        <div>
+            <label for="productType" class="block text-sm font-medium text-gray-700">Tipo de Producto</label>
+            <select id="productType" [(ngModel)]="productoSeleccionado.tipo" name="productType"
+                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">Selecciona un tipo de producto</option>
+                <option value="Productos Frescos">Productos Frescos</option>
+                <option value="Lácteos y Huevos">Lácteos y Huevos</option>
+                <option value="Carnes y Aves">Carnes y Aves</option>
+                <option value="Granos y Cereales">Granos y Cereales</option>
+                <option value="Legumbres">Legumbres</option>
+                <option value="Hierbas y Especias">Hierbas y Especias</option>
+                <option value="Bebidas">Bebidas</option>
+                <option value="Productos de Panadería">Productos de Panadería</option>
+                <option value="Productos Procesados y Empaquetados">Productos Procesados y Empaquetados</option>
+                <option value="Productos Artesanales">Productos Artesanales</option>
+                <option value="Alternativas Lácteas">Alternativas Lácteas</option>
+                <option value="Productos Naturales y Orgánicos">Productos Naturales y Orgánicos</option>
+                <option value="Productos de Temporada">Productos de Temporada</option>
+            </select>
+        </div>
+
+        <!-- Título del Producto -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Título del Producto</label>
+            <input type="text" name="productTitle"
+                class="mt-1 border-gray-300 rounded-md shadow-sm w-full p-2 focus:ring-indigo-500 focus:border-indigo-500"
+                [(ngModel)]="productoSeleccionado.titulo">
+        </div>
+
+        <!-- Descripción del Producto -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Descripción del Producto</label>
+            <textarea rows="4" placeholder="Escribe una descripción detallada del producto" name="productDescription"
+                class="mt-1 border-gray-300 rounded-md shadow-sm w-full p-2 focus:ring-indigo-500 focus:border-indigo-500"
+                [(ngModel)]="productoSeleccionado.descripcion"></textarea>
+        </div>
+
+        <!-- Precio por Unidad -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Precio por Unidad</label>
+            <input type="text" placeholder="Ej. 1.200.000" name="productPrice"
+                class="mt-1 border-gray-300 rounded-md shadow-sm w-full p-2 focus:ring-indigo-500 focus:border-indigo-500"
+                [(ngModel)]="productoSeleccionado.precioFormateado" (input)="onCurrencyInput($event)">
+        </div>
+
+        <!-- Ciudad -->
+        <div class="w-full max-w">
+            <label for="ciudad" class="block text-sm font-medium text-gray-700">Selecciona tu ciudad:</label>
+            <select [(ngModel)]="productoSeleccionado.ciudad" name="ciudad"
+                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">Selecciona una ciudad</option>
+                <option *ngFor="let ciudad of ciudades" [value]="ciudad.name">{{ ciudad.name }}</option>
+            </select>
+        </div>
+
+        <!-- Cantidad disponible -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Cantidad disponible</label>
+            <div class="relative flex items-center max-w-[8rem]">
+                <button type="button" (click)="decrementCantidad()"
+                    class="bg-gray-100 border border-gray-300 rounded-l-lg p-3 h-11 focus:outline-none">
+                    <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 18 2">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M1 1h16" />
+                    </svg>
+                </button>
+                <input type="text" name="cantidadDisponible" [(ngModel)]="productoSeleccionado.cantidadDisponible"
+                    min="1" max="50"
+                    class="text-center bg-gray-50 border-x-0 border-gray-300 h-11 text-gray-900 text-sm w-full py-2.5 focus:ring-blue-500 focus:border-blue-500">
+                <button type="button" (click)="incrementCantidad()"
+                    class="bg-gray-100 border border-gray-300 rounded-r-lg p-3 h-11 focus:outline-none">
+                    <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 18 18">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 1v16M1 9h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Estado del Producto -->
+        <div>
+            <label for="estado-producto" class="block text-sm font-medium text-gray-700">Estado del Producto</label>
+            <select id="estado-producto" [(ngModel)]="productoSeleccionado.estado" name="estadoProducto"
+                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="disponible">Disponible</option>
+                <option value="agotado">Agotado</option>
+                <option value="proximamente">Próximamente</option>
+            </select>
+        </div>
+
+        <!-- Fotos del Producto -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Fotos del Producto</label>
+            <input type="file" accept="image/*" multiple (change)="onFileSelected($event)"
+                class="mt-1 w-full border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+
+            <!-- Mostrar fotos existentes -->
+            <div class="photo-flex-container mt-4">
+                <div *ngFor="let photo of existingPhotos" class="photo-container">
+                    <!-- Construir la URL de las fotos existentes -->
+                    <img [src]="getFotoUrl(photo)" alt="Foto del producto" class="w-32 h-32 object-cover">
+                    <button type="button" (click)="removeExistingPhoto(photo)"
+                        class="ml-2 text-red-500 hover:text-red-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div *ngFor="let photo of photos" class="photo-container">
+                    <img [src]="createImagePreview(photo)" alt="Foto del producto" class="w-32 h-32 object-cover">
+                    <button type="button" (click)="removePhoto(photo)" class="ml-2 text-red-500 hover:text-red-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Guardar y Cancelar -->
+        <div class="flex justify-end">
+            <button type="button" (click)="cancelEdit()"
+                class="text-white bg-gray-500 hover:bg-gray-600 font-bold py-2 px-4 rounded mr-2">
+                Cancelar
+            </button>
+            <button type="submit"
+                class="w-full bg-indigo-600 text-white py-2 rounded-md shadow-sm hover:bg-indigo-700 transition duration-200">
+                Guardar Cambios
+            </button>
+        </div>
+    </form>
+
     <div *ngIf="filteredProductos.length > 0; else noProductos">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div *ngFor="let producto of filteredProductos" class="bg-white shadow-md rounded-lg p-6 relative">
@@ -16,13 +159,13 @@
                 <!-- Imagen del producto -->
                 <div *ngIf="producto.fotos && producto.fotos.length > 0">
                     <img [src]="getFotoUrl(producto.fotos[0])" alt="Foto del producto"
-                        class="w-full h-48 object-cover rounded-t-md">
+                        class="w-full h-80 object-cover rounded-t-md">
                 </div>
 
                 <!-- Información del producto -->
                 <div class="mt-4">
                     <h3 class="text-lg font-semibold text-gray-900">{{ producto.titulo }}</h3>
-                    <p class="text-sm text-gray-600 mt-2">{{ producto.descripcion }}</p>
+                    <p class="text-sm text-gray-600 mt-2">{{ producto.descripcion | slice:0:100 }}{{ producto.descripcion.length > 100 ? '...' : '' }}</p>
                     <p class="text-md font-bold text-indigo-600 mt-2">{{ formatPrice(producto.precio) }}</p>
                     <p class="text-sm text-gray-500">Ciudad: {{ producto.ciudad }}</p>
 

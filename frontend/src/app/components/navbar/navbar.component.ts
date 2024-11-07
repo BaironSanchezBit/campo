@@ -7,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { CartService } from '../../services/cart.service';
 import Swal from 'sweetalert2';
 import { RecaptchaFormsModule, RecaptchaModule } from 'ng-recaptcha';
+import { SharedService } from '../../services/shared.service';
 declare var initDropdowns: any;  // Si usas una biblioteca externa como Flowbite, declárala
 
 @Component({
@@ -31,8 +32,13 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   private intentarPagar: boolean = false;
   captchaResponse: string = '';
   siteKey: string = '6LfinXUqAAAAANSNuMjouaodI69lcsIqMUXcB4Jr';
+  isRecoveringPassword: boolean = false;
+  recoveryEmail: string = '';
+  recoveryMessage: string = '';
+  recoveryErrorMessage: string = '';
+  isMenuOpen = false;
 
-  constructor(private authService: AuthService, private router: Router, private cartService: CartService) { }
+  constructor(private sharedService: SharedService, private authService: AuthService, private router: Router, private cartService: CartService) { }
 
   ngOnInit() {
     const usuarioGuardado = localStorage.getItem('usuario');
@@ -43,12 +49,36 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       this.isLoggedIn = false;
     }
     this.productosCarrito = this.cartService.getItems();
+    this.sharedService.mostrarAuthModal$.subscribe(() => {
+      this.toggleAuthModal(); // Abre el modal de autenticación
+    });
   }
 
   ngAfterViewInit() {
     if (typeof initDropdowns === 'function') {
       initDropdowns();  // Asegúrate de reemplazar esto con la función que inicializa tus dropdowns
     }
+  }
+
+  toggleRecoveryPassword() {
+    this.isRecoveringPassword = !this.isRecoveringPassword;
+    this.isRegistering = false;  // Cerrar el formulario de registro si está abierto
+    this.errorMessage = '';
+    this.recoveryMessage = '';
+    this.recoveryErrorMessage = '';
+  }
+
+  onRecoverPassword() {
+    this.authService.recoverPassword(this.recoveryEmail).subscribe(
+      (response) => {
+        this.recoveryMessage = 'Correo de recuperación enviado. Revisa tu bandeja de entrada.';
+        this.recoveryErrorMessage = '';
+      },
+      (error) => {
+        this.recoveryErrorMessage = error.error?.msg || 'Error al enviar el correo de recuperación.';
+        this.recoveryMessage = '';
+      }
+    );
   }
 
   resolved(captchaResponse: string): void {
@@ -109,7 +139,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   }
 
   getFotoUrl(foto: string): string {
-    return `http://localhost:4000/uploads/${foto}`;
+    return `https://arribaelcampo.store/uploads/${foto}`;
   }
 
   transform(value: number): string {
@@ -132,6 +162,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   }
 
   onIniciarSesion() {
+    console.log('Datos de inicio de sesión:', this.login);
+
     this.authService.iniciarSesion(this.login.correo, this.login.contrasena).subscribe(
       (response) => {
         const token = response.token;
@@ -220,6 +252,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         this.errorMessage = error.error?.msg || 'Ocurrió un error al registrar el usuario. Inténtalo de nuevo.';
       }
     );
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
   }
 
   cerrarSesion() {

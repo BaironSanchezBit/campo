@@ -55,3 +55,13 @@ input:invalid {
     background-color: #ffeaea;
     border-color: #e3342f;
 }
+
+
+@media screen and (min-width: 300px) and (max-width: 767px) {
+    .empezar{
+        padding-top: 5px;
+    }
+    .carrito{
+        padding-top: 5px;
+    }
+}
