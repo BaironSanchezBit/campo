@@ -26,10 +26,9 @@ export class MercadoComponent implements OnInit {
   mostrarNotificacion: boolean = false;
   // Lista de categorías
   categories: string[] = [
-    'Todas las categorías', 'Productos Frescos', 'Lácteos y Huevos', 'Carnes y Aves', 'Granos y Cereales',
-    'Legumbres', 'Hierbas y Especias', 'Bebidas', 'Productos de Panadería',
-    'Productos Procesados y Empaquetados', 'Productos Artesanales', 'Alternativas Lácteas',
-    'Productos Naturales y Orgánicos', 'Productos de Temporada'
+    'Todas las categorías', 'Frutas', 'Verduras', 'Tubérculos y Raíces', 'Granos y Cereales',
+    'Legumbres', 'Hierbas y Especias', 'Frutas de Temporada', 'Hortalizas',
+    'Plátano y Banano', 'Frutos Exóticos'
   ];
 
   constructor(private sharedService: SharedService, private authService: AuthService, private http: HttpClient, private cartService: CartService,
