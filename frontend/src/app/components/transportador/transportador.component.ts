@@ -7,6 +7,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { PedidoService } from '../../services/pedido.service';
 import { FooterComponent } from '../footer/footer.component';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-transportador',
@@ -16,20 +17,23 @@ import { NavbarComponent } from '../navbar/navbar.component';
   styleUrls: ['./transportador.component.css']
 })
 export class TransportadorComponent implements OnInit {
-  transportadorId: string = '123'; // Transportador de prueba
+  transportadorId: any;
   pedidos: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
-    private pedidoService: PedidoService
+    private pedidoService: PedidoService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
     // Obtener el ID del transportador de la URL
-    const id = this.route.snapshot.paramMap.get('id');
-
-    if (id === this.transportadorId) { // Verificar si es el transportador de prueba
-      this.obtenerPedidosPorTransportador(id);
+    this.transportadorId = this.authService.obtenerUsuarioId();
+    if (this.transportadorId) {
+      console.log('ID del usuario logueado (transportador):', this.transportadorId);
+      this.obtenerPedidosPorTransportador(this.transportadorId);
+    } else {
+      console.error('No se encontró un usuario logueado.');
     }
   }
 

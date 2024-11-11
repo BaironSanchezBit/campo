@@ -152,9 +152,40 @@ exports.crearUsuario = async (req, res) => {
         if (usuario) {
             return res.status(400).json({ msg: 'El usuario ya existe' });
         }
+
+        // Crear nuevo usuario
         usuario = new Usuario({ nombres, apellidos, correo, contrasena, fotoPerfil, celular, rol, verificado });
         await usuario.save();
-        res.status(201).json(usuario);
+
+        // Generar token de verificación con expiración de 5 minutos
+        const tokenVerificacion = jwt.sign({ id: usuario._id }, process.env.JWT_SECRET, { expiresIn: '5m' });
+
+        // Enviar correo de verificación
+        const mailOptions = {
+            from: 'no.reply.arribaelcampo@gmail.com',
+            to: usuario.correo,
+            subject: 'Confirma tu cuenta - Arriba el Campo',
+            html: `
+                <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+                    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #dddddd;">
+                        <h2 style="color: #27ae60; text-align: center;">Bienvenido a Arriba el Campo</h2>
+                        <p style="font-size: 16px; color: #555555;">Hola ${nombres},</p>
+                        <p style="font-size: 16px; color: #555555;">Gracias por registrarte en Arriba el Campo. Para activar tu cuenta y empezar a disfrutar de todos los beneficios, confirma tu correo electrónico haciendo clic en el botón a continuación:</p>
+                        
+                        <div style="text-align: center; margin-top: 20px;">
+                            <a href="https://arribaelcampo.store/confirmar/${tokenVerificacion}" style="background-color: #27ae60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-size: 16px;">Confirmar Cuenta</a>
+                        </div>
+                        
+                        <p style="font-size: 16px; color: #555555; margin-top: 20px;">Este enlace expirará en 5 minutos. Si no solicitaste esta confirmación, puedes ignorar este correo.</p>
+                        <p style="font-size: 14px; color: #aaaaaa; text-align: center; margin-top: 20px;">Arriba el Campo - Promoviendo la agricultura local</p>
+                    </div>
+                </div>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.status(201).json({ msg: 'Usuario creado y correo de verificación enviado.' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: 'Error en el servidor' });
@@ -164,7 +195,16 @@ exports.crearUsuario = async (req, res) => {
 // Actualizar un usuario
 exports.actualizarUsuario = async (req, res) => {
     const { id } = req.params;
+    let { contrasena } = req.body; // Captura la contraseña si está presente en la solicitud
+
     try {
+        // Si hay una contraseña proporcionada, aplicamos hashing
+        if (contrasena) {
+            const salt = await bcrypt.genSalt(10);
+            contrasena = await bcrypt.hash(contrasena, salt);
+            req.body.contrasena = contrasena; // Reemplaza la contraseña en el cuerpo de la solicitud
+        }
+
         const usuario = await Usuario.findByIdAndUpdate(id, req.body, { new: true });
         if (!usuario) {
             return res.status(404).json({ msg: 'Usuario no encontrado' });
@@ -173,6 +213,30 @@ exports.actualizarUsuario = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};
+
+exports.actualizarUsuarioPerfil = async (req, res) => {
+    const { id } = req.params;
+    let { contrasena } = req.body;
+
+    try {
+        // Si hay una nueva contraseña proporcionada, encripta antes de guardarla
+        if (contrasena) {
+            const salt = await bcrypt.genSalt(10);
+            contrasena = await bcrypt.hash(contrasena, salt);
+            req.body.contrasena = contrasena;
+        }
+
+        const usuarioActualizado = await Usuario.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+        if (!usuarioActualizado) {
+            return res.status(404).json({ msg: 'Usuario no encontrado' });
+        }
+
+        res.json(usuarioActualizado);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: 'Error al actualizar el perfil.' });
     }
 };
 
@@ -204,19 +268,31 @@ exports.solicitarRecuperacionContrasena = async (req, res) => {
         // Generar un token para el enlace de recuperación de contraseña (válido por 1 hora)
         const tokenRecuperacion = jwt.sign({ id: usuario._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        // Opciones de correo
+        // Opciones de correo con el nuevo diseño estilizado
         const mailOptions = {
             from: 'no.reply.arribaelcampo@gmail.com',
             to: correo,
             subject: 'Recuperación de contraseña - Arriba el Campo',
             html: `
-                <p>Hola ${usuario.nombres},</p>
-                <p>Recibimos una solicitud para restablecer tu contraseña. Haz clic en el enlace a continuación para restablecerla:</p>
-                <a href="https://arribaelcampo.store/reset-password/${encodeURIComponent(tokenRecuperacion)}">Restablecer Contraseña</a>
-                <p>Si no solicitaste el cambio, puedes ignorar este correo.</p>
+                <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+                    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #dddddd;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <img src="https://arribaelcampo.store/assets/img/logo.ico" alt="Arriba el Campo" style="max-width: 100px;">
+                        </div>
+                        <h2 style="color: #27ae60; text-align: center;">Recupera tu contraseña</h2>
+                        <p style="font-size: 16px; color: #555555;">Hola ${usuario.nombres},</p>
+                        <p style="font-size: 16px; color: #555555;">Recibimos una solicitud para restablecer tu contraseña. Haz clic en el botón a continuación para iniciar el proceso de restablecimiento:</p>
+                        
+                        <div style="text-align: center; margin-top: 20px;">
+                            <a href="https://arribaelcampo.store/reset-password/${encodeURIComponent(tokenRecuperacion)}" style="background-color: #27ae60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-size: 16px;">Restablecer Contraseña</a>
+                        </div>
+                        
+                        <p style="font-size: 16px; color: #555555; margin-top: 20px;">Este enlace es válido por 1 hora. Si no solicitaste el cambio, puedes ignorar este correo.</p>
+                        <p style="font-size: 14px; color: #aaaaaa; text-align: center; margin-top: 20px;">Arriba el Campo - Promoviendo la agricultura local</p>
+                    </div>
+                </div>
             `
         };
-
 
         // Enviar correo de recuperación
         await transporter.sendMail(mailOptions);
@@ -227,6 +303,7 @@ exports.solicitarRecuperacionContrasena = async (req, res) => {
         res.status(500).json({ msg: 'Error al procesar la solicitud de recuperación.' });
     }
 };
+
 
 exports.resetPassword = async (req, res) => {
     const { token, newPassword } = req.body;

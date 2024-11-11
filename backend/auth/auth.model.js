@@ -15,21 +15,15 @@ const userSchema = new mongoose.Schema({
 // Encriptar la contraseña antes de guardar
 userSchema.pre('save', async function (next) {
     if (!this.isModified('contrasena')) {
-        console.log('Contraseña no modificada, se omite la encriptación');
         return next();
     }
-    console.log('Encriptando contraseña...');
     const salt = await bcrypt.genSalt(10);
     this.contrasena = await bcrypt.hash(this.contrasena, salt);
-    console.log('Contraseña encriptada:', this.contrasena);
     next();
 });
 
 // Método para comparar contraseñas
 userSchema.methods.compararContraseña = async function (contrasenaIngresada) {
-    console.log('Comparando contraseñas...');
-    console.log('Contraseña ingresada:', contrasenaIngresada);
-    console.log('Contraseña almacenada (hash):', this.contrasena);
     return await bcrypt.compare(contrasenaIngresada, this.contrasena);
 };
 

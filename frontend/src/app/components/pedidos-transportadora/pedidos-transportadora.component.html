@@ -1,3 +1,5 @@
+<app-navbar></app-navbar>
+
 <div class="container mx-auto px-4 py-8">
     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Pedidos para Asignación de Transportadores</h2>
 
@@ -18,7 +20,7 @@
             <h4 class="text-lg font-semibold text-gray-800 mt-4">Productos del Pedido:</h4>
 
             <!-- Lista de productos -->
-            <ul class="divide-y divide-gray-200">
+            <ul class="divide-y divide-gray-200" *ngIf="pedido.productos && pedido.productos.length > 0">
                 <li *ngFor="let producto of pedido.productos" class="py-4">
                     <div class="flex justify-between items-center">
                         <div>
@@ -52,10 +54,12 @@
                     class="bg-gray-50 border rounded-lg text-gray-900 text-sm p-2 w-full"
                     (change)="asignarTransportador(pedido.pedidoId, pedido.transportadorId)">
                     <option *ngFor="let transportador of transportadores" [value]="transportador._id">
-                        {{ transportador.nombre }}
+                        {{ transportador.nombres }} {{ transportador.apellidos }}
                     </option>
                 </select>
             </div>
         </div>
     </div>
 </div>
+
+<app-footer></app-footer>

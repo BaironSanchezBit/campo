@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { CartService } from '../../services/cart.service';
@@ -30,6 +30,7 @@ export class PaymentComponent implements OnInit {
   personaRecibe: string = '';
   numeroCelular: string = '';
   ciudad: string = '';
+  isMobile: boolean = false;
 
   // Método de pago seleccionado
   selectedPaymentMethod: string | null = null;
@@ -39,6 +40,7 @@ export class PaymentComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.detectScreenSize();
     const usuarioGuardado = localStorage.getItem('usuario');
     if (usuarioGuardado) {
       this.usuario = JSON.parse(usuarioGuardado);
@@ -46,6 +48,16 @@ export class PaymentComponent implements OnInit {
     } else {
       this.isLoggedIn = false;
     }
+  }
+
+  // Detecta el tamaño de la pantalla al cargar y cuando se cambia el tamaño
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.detectScreenSize();
+  }
+
+  private detectScreenSize() {
+    this.isMobile = window.innerWidth <= 1199; // Verifica si el ancho es menor o igual a 768px
   }
 
   processPayPalPayment() {
@@ -67,10 +79,10 @@ export class PaymentComponent implements OnInit {
   }
 
   createOrder(paymentMethod: string): Promise<void> {
-    
-    if(this.email === '') {
-    this.email = this.usuario.correo;
-  }
+
+    if (this.email === '') {
+      this.email = this.usuario.correo;
+    }
 
     const orderData = {
       email: this.email,
@@ -89,11 +101,14 @@ export class PaymentComponent implements OnInit {
       this.http.post('https://arribaelcampo.store/api/pagos/procesar-pago', orderData)
         .subscribe(
           () => {
-            this.paymentStatus = 'Pedido creado exitosamente.';
+            this.paymentStatus = 'Pedido creado y correos enviados con éxito.';
+            this.router.navigate(['/success']);
             resolve();
           },
           error => {
-            this.paymentStatus = 'Error al crear el pedido.';
+            console.error('Error enviando correos y creando pedido', error);
+            this.paymentStatus = 'Error al crear el pedido. Intenta nuevamente.';
+            this.router.navigate(['/cancel']);
             reject(error);
           }
         );
@@ -152,6 +167,7 @@ export class PaymentComponent implements OnInit {
     }
   }
 
+
   transform(value: number): string {
     return `$${value.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   }
@@ -161,10 +177,11 @@ export class PaymentComponent implements OnInit {
   }
 
   completeOrder() {
-    this.sendConfirmationEmail();
+    this.cartService.clearCart();
   }
 
   processCreditCardPayment() {
+    console.log('Enviando correos de confirmación...');
     this.completeOrder();
   }
 
@@ -201,45 +218,6 @@ export class PaymentComponent implements OnInit {
     }
 
     return false;
-  }
-
-  sendConfirmationEmail() {
-    this.paymentStatus = 'Creando pedido...';
-
-    if(this.email === '') {
-      this.email = this.usuario.correo;
-    }
-
-    const emailPayload = {
-      email: this.email,
-      paymentMethod: this.selectedPaymentMethod,
-      productos: this.items.map(item => ({
-        _id: item._id,
-        cantidad: item.cantidad,
-        precio: item.precio,
-        vendedorId: item.vendedorId
-      })),
-      total: this.total,
-      usuarioId: this.usuario?._id,  // Asegúrate de que usuarioId esté presente
-      direccionEnvio: this.direccionEnvio,
-      personaRecibe: this.personaRecibe,
-      numeroCelular: this.numeroCelular,
-      ciudad: this.ciudad
-    };
-
-    this.http.post('https://arribaelcampo.store/api/pagos/procesar-pago', emailPayload)
-      .subscribe(
-        response => {
-          console.log('Pedido creado y correos enviados correctamente', response);
-          this.paymentStatus = 'Pedido creado y correos enviados con éxito.';
-          this.router.navigate(['/success']);
-        },
-        error => {
-          console.error('Error enviando correos y creando pedido', error);
-          this.paymentStatus = 'Error al crear el pedido. Intenta nuevamente.';
-          this.router.navigate(['/cancel']);
-        }
-      );
   }
 
   allowOnlyNumbers(event: KeyboardEvent) {

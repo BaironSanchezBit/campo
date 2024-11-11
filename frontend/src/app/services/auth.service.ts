@@ -63,6 +63,12 @@ export class AuthService {
     return this.http.put(`${this.apiUrl}/usuario/${id}`, usuario, { headers });
   }
 
+  actualizarUsuarioPerfil(id: string, usuario: any): Observable<any> {
+    const headers = this.obtenerHeaders();
+    return this.http.put(`${this.apiUrl}/usuarioPerfil/${id}`, usuario, { headers });
+  }
+
+
   eliminarUsuario(id: string): Observable<any> {
     const headers = this.obtenerHeaders();
     return this.http.delete(`${this.apiUrl}/usuario/${id}`, { headers });

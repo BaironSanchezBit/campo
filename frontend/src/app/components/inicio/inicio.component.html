@@ -10,12 +10,12 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mx-auto">
         <div *ngFor="let producto of productos"
             class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <a href="#">
+            <a [routerLink]="['/producto', producto._id]">
                 <img [src]="getFotoUrl(producto.fotos[0])" alt="{{ producto.titulo }}"
                     class="product-image img-responsive" />
             </a>
             <div class="px-5 pb-5">
-                <a href="#">
+                <a [routerLink]="['/producto', producto._id]">
                     <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ producto.titulo }}
                     </h5>
                 </a>

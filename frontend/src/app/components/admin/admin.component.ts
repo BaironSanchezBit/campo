@@ -65,6 +65,12 @@ export class AdminComponent implements OnInit {
   actualizarUsuario(): void {
     if (!this.usuarioEditando) return;
 
+    // Solo agrega la propiedad `contrasena` si el usuario ha proporcionado una nueva contraseña
+    const datosActualizados: any = { ...this.usuarioEditando };
+    if (this.usuarioEditando.nuevaContrasena) {
+      datosActualizados.contrasena = this.usuarioEditando.nuevaContrasena;
+    }
+
     Swal.fire({
       title: '¿Estás seguro?',
       text: '¿Deseas actualizar este usuario?',
@@ -76,7 +82,7 @@ export class AdminComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.authService.actualizarUsuario(this.usuarioEditando._id, this.usuarioEditando).subscribe(
+        this.authService.actualizarUsuario(this.usuarioEditando._id, datosActualizados).subscribe(
           (usuarioActualizado) => {
             const index = this.usuarios.findIndex(u => u._id === usuarioActualizado._id);
             if (index !== -1) this.usuarios[index] = usuarioActualizado;

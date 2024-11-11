@@ -22,7 +22,7 @@ export class PedidosTransportadoraComponent implements OnInit {
 
   ngOnInit() {
     this.obtenerPedidosEnviados();
-    this.obtenerTransportadores(); // Lógica para obtener transportadores
+    this.cargarTransportadores(); // Lógica para obtener transportadores
   }
 
   obtenerPedidosEnviados() {
@@ -37,13 +37,15 @@ export class PedidosTransportadoraComponent implements OnInit {
     );
   }
 
-  obtenerTransportadores() {
-    // Implementar lógica para obtener transportadores de la base de datos
-    this.transportadores = [
-      { _id: '123', nombre: 'Transportador 1' },
-      { _id: '124', nombre: 'Transportador 2' },
-      // Agrega más transportadores aquí
-    ];
+  cargarTransportadores() {
+    this.pedidoService.obtenerTransportadores().subscribe(
+      (response) => {
+        this.transportadores = response;
+      },
+      (error) => {
+        console.error('Error al obtener transportadores:', error);
+      }
+    );
   }
 
   asignarTransportador(pedidoId: number, transportadorId: string) {

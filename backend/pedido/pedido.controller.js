@@ -21,7 +21,6 @@ async function sendMail(mailOptions) {
             throw new Error('No recipients defined');
         }
         const info = await transporter.sendMail(mailOptions);
-        console.log('Correo enviado con éxito:', info.response);
         return info;
     } catch (error) {
         console.error('Error al enviar el correo:', error);
@@ -105,7 +104,6 @@ const enviarCorreosCambioEstado = async (pedido, nuevoEstado) => {
         await sendMail(customerMailOptions);  // Enviar al cliente
         await Promise.all(vendorMailPromises.filter(p => p !== null)); // Filtrar correos nulos y enviarlos
 
-        console.log(`Correos enviados correctamente para el estado ${nuevoEstado}`);
     } catch (error) {
         console.error(`Error al enviar los correos para el estado ${nuevoEstado}:`, error);
     }
@@ -182,10 +180,6 @@ exports.actualizarEstadoProductoPorVendedor = async (req, res) => {
             return res.status(404).json({ message: 'Pedido no encontrado' });
         }
 
-        // Imprimir los IDs de los productos en el pedido para verificar
-        console.log('Producto ID recibido:', productoId);
-        console.log('Productos en el pedido:', pedido.productos.map(p => p.productoId._id.toString()));
-
         // Busca el producto dentro de los productos del pedido utilizando el campo _id
         const producto = pedido.productos.find(p => p.productoId._id.toString() === productoId);
         if (!producto) {
@@ -221,10 +215,6 @@ exports.actualizarEstadoProductoPorTransportador = async (req, res) => {
         if (!pedido) {
             return res.status(404).json({ message: 'Pedido no encontrado' });
         }
-
-        // Verificar los IDs de los productos para ayudar en depuración
-        console.log('Producto ID recibido:', productoId);
-        console.log('Productos en el pedido:', pedido.productos.map(p => p.productoId._id.toString()));
 
         const producto = pedido.productos.find(p => p.productoId._id.toString() === productoId);
         if (!producto) {
@@ -262,7 +252,8 @@ exports.obtenerPedidosEnviados = async (req, res) => {
             'Productos camino a la empresa transportadora',
             'Productos en la empresa transportadora',
             'Comprobando productos',
-            'Camino a tu dirección'
+            'Camino a tu dirección',
+            'Creado'
         ];
 
         const pedidos = await Pedido.find({ estadoGeneral: { $in: estadosPermitidos } })
@@ -350,5 +341,18 @@ exports.actualizarEstadoGeneralPedido = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al actualizar el estado del pedido', error });
+    }
+};
+
+exports.obtenerTransportadores = async (req, res) => {
+    try {
+        const transportadores = await Usuario.find({ rol: 'transportador' });
+        if (!transportadores.length) {
+            return res.status(404).json({ message: 'No hay transportadores disponibles' });
+        }
+        res.status(200).json(transportadores);
+    } catch (error) {
+        console.error('Error al obtener transportadores:', error);
+        res.status(500).json({ message: 'Error al obtener transportadores', error });
     }
 };

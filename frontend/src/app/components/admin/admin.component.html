@@ -116,6 +116,12 @@
                 <option value="transportador">Transportador</option>
                 <option value="admin">Administrador</option>
             </select>
+
+            <!-- Campo de entrada para la nueva contraseña -->
+            <input [(ngModel)]="usuarioEditando.nuevaContrasena" name="editarContrasena" placeholder="Nueva Contraseña"
+                type="password"
+                class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+
             <div class="col-span-1 md:col-span-2 flex justify-between space-x-4 mt-4">
                 <button type="submit"
                     class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg shadow-lg">Guardar

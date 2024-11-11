@@ -171,6 +171,8 @@
                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                 <li><a routerLink="/mis-pedidos" *ngIf="usuario?.rol === 'comprador'"
                                         class="block px-4 py-2">Mis Pedidos</a></li>
+                                <li><a routerLink="/pedidos" *ngIf="usuario?.rol === 'vendedor'"
+                                        class="block px-4 py-2">Pedidos</a></li>
                                 <li><a routerLink="/perfil" class="block px-4 py-2">Perfil</a></li>
                             </ul>
                             <div class="py-2">
@@ -199,7 +201,8 @@
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                    {{ isRegistering ? 'Registrar cuenta' : isRecoveringPassword ? 'Recuperar Contraseña' : 'Iniciar Sesión' }}
+                    {{ isRegistering ? 'Registrar cuenta' : isRecoveringPassword ? 'Recuperar Contraseña' : 'Iniciar
+                    Sesión' }}
                 </h3>
                 <button type="button"
                     class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -230,7 +233,8 @@
                             placeholder="••••••••" />
                     </div>
                     <div class="flex justify-between">
-                        <a (click)="toggleRecoveryPassword()" class="text-sm text-blue-700 hover:underline dark:text-blue-500 cursor-pointer">Olvidaste tu
+                        <a (click)="toggleRecoveryPassword()"
+                            class="text-sm text-blue-700 hover:underline dark:text-blue-500 cursor-pointer">Olvidaste tu
                             contraseña?</a>
                     </div>
                     <div *ngIf="errorMessage" class="errorMessage">
@@ -345,6 +349,17 @@
                     <div class="flex items-center justify-center py-1">
                         <re-captcha *ngIf="siteKey" (resolved)="resolved($event!)" [siteKey]="siteKey!"></re-captcha>
                     </div>
+                    <div class="flex items-start">
+                        <input type="checkbox" id="acceptTerms" [(ngModel)]="acceptTerms" name="acceptTerms" required
+                            class="w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600">
+                        <label for="acceptTerms" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                            Acepto los <a href="/terminos-condiciones" target="_blank"
+                                class="text-blue-600 hover:underline dark:text-blue-500">Términos y Condiciones</a>
+                        </label>
+                    </div>
+                    <div *ngIf="!acceptTerms && showTermsError" class="text-red-600 text-sm mt-1">
+                        Debes aceptar los Términos y Condiciones para registrarte.
+                    </div>
                     <div *ngIf="errorMessage" class="errorMessage">
                         {{ errorMessage }}
                     </div>
@@ -425,7 +440,9 @@
                                                         <h3>{{ producto.titulo }}</h3>
                                                         <p class="ml-4">{{ transform(producto.precio) }}</p>
                                                     </div>
-                                                    <p class="mt-1 text-sm text-gray-500">{{ producto.descripcion | slice:0:100 }}{{ producto.descripcion.length > 100 ? '...' : '' }}</p>
+                                                    <p class="mt-1 text-sm text-gray-500">{{ producto.descripcion |
+                                                        slice:0:100 }}{{ producto.descripcion.length > 100 ? '...' : ''
+                                                        }}</p>
                                                 </div>
 
                                                 <!-- Incremento/decremento de cantidad -->

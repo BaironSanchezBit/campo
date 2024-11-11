@@ -2,6 +2,8 @@ const nodemailer = require('nodemailer');
 const Producto = require('../producto/producto.model');
 const Usuario = require('../auth/auth.model');
 const Pedido = require('../pedido/pedido.model');
+const PDFDocument = require('pdfkit'); // Importar pdfkit
+const fs = require('fs'); // Para manejar la escritura de archivos
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -24,14 +26,12 @@ function sendMail(mailOptions) {
                 console.error('Error al enviar el correo:', error);
                 return reject(error);
             }
-            console.log('Correo enviado con éxito:', info.response);
             resolve(info);
         });
     });
 }
 
 exports.procesarPago = async (req, res) => {
-    console.log('Datos recibidos en el cuerpo de la solicitud:', req.body);
     const { email, productos, total, usuarioId, direccionEnvio, personaRecibe, numeroCelular, ciudad, paymentMethod } = req.body;
 
     if (!email || typeof email !== 'string' || email.trim() === '') {
@@ -44,14 +44,12 @@ exports.procesarPago = async (req, res) => {
             console.error('Error: Productos no válidos o vacíos');
             return res.status(400).json({ message: 'Productos no válidos o vacíos' });
         }
-        console.log('Productos validados correctamente.');
 
         // Verificación de usuario
         const usuarioLogueado = await Usuario.findById(usuarioId);
         if (!usuarioLogueado || !usuarioLogueado.correo) {
             throw new Error('Usuario logueado no encontrado o sin correo electrónico');
         }
-        console.log('Usuario logueado encontrado:', usuarioLogueado);
 
         // Obtener detalles de los productos
         const productosConVendedor = await Producto.find({ _id: { $in: productos.map(p => p._id) } }).populate('usuarioId');
@@ -59,7 +57,6 @@ exports.procesarPago = async (req, res) => {
             console.error('Error: No se encontraron productos con los IDs proporcionados');
             return res.status(404).json({ message: 'No se encontraron productos con los IDs proporcionados' });
         }
-        console.log('Productos obtenidos correctamente:', productosConVendedor);
 
         // Crear el pedido
         const pedido = new Pedido({
@@ -78,29 +75,101 @@ exports.procesarPago = async (req, res) => {
             paymentMethod: paymentMethod
         });
 
-        console.log('Creando el pedido en la base de datos...');
         await pedido.save();
-        console.log('Pedido creado con éxito:', pedido);
 
         // Mensaje de pago según el método
         let paymentMessage = '';
         switch (paymentMethod) {
             case 'cashOnDelivery':
-                paymentMessage = 'Has seleccionado el pago contra entrega. Por favor, prepárate para realizar el pago al momento de la entrega.';
+                paymentMessage = 'Pago contra entrega';
                 break;
             case 'paypal':
-                paymentMessage = 'Has seleccionado el pago con PayPal. Serás redirigido a la plataforma de PayPal para completar el pago.';
+                paymentMessage = 'PayPal';
                 break;
             case 'creditCard':
-                paymentMessage = 'Has seleccionado el pago con tarjeta de crédito/débito.';
+                paymentMessage = 'Tarjeta de crédito/débito.';
                 break;
             case 'bankTransfer':
-                paymentMessage = 'Has seleccionado el pago mediante transferencia bancaria. Te enviaremos los detalles para completar la transferencia.';
+                paymentMessage = 'Transferencia bancaria';
                 break;
             default:
                 paymentMessage = 'Método de pago seleccionado no reconocido.';
         }
-        console.log('Mensaje de pago generado:', paymentMessage);
+
+        // Generar el PDF del comprobante
+        const pdfPath = `./comprobante_pedido_${Date.now()}_${Math.random().toString(36).substring(7)}.pdf`;
+        const doc = new PDFDocument({ margin: 40 }); // Definir márgenes del documento
+
+        // Conectar el documento PDF al sistema de archivos para su almacenamiento temporal
+        doc.pipe(fs.createWriteStream(pdfPath));
+
+        // Agregar logotipo de Arriba el Campo (ajusta la ruta si es necesario)
+        const logoPath = '../assets/img/logo.png'; // Ruta local al logotipo
+        if (fs.existsSync(logoPath)) {
+            doc.image(logoPath, { fit: [100, 100], align: 'center' });
+        } else {
+            console.warn('El logotipo no fue encontrado en la ruta especificada. Verifica que exista.');
+        }
+
+        // Título del comprobante
+        doc
+            .fontSize(18)
+            .fillColor('#27ae60') // Verde para el título
+            .text('Comprobante de Pago - Arriba el Campo', { align: 'center' })
+            .moveDown(1);
+
+        // Información del pedido y cliente
+        doc
+            .fontSize(12)
+            .fillColor('black')
+            .text(`Pedido ID: ${pedido._id}`, { continued: true })
+            .text(`  Cliente: ${usuarioLogueado.nombres} ${usuarioLogueado.apellidos}`, { align: 'right' })
+            .moveDown(0.5)
+            .text(`Correo: ${email}`)
+            .text(`Total: $${total}`, { underline: true })
+            .text(`Método de Pago: ${paymentMessage}`)
+            .moveDown(1);
+
+        // Información de envío
+        doc
+            .fontSize(12)
+            .fillColor('#27ae60')
+            .text('Información de Envío:', { underline: true })
+            .moveDown(0.5)
+            .fontSize(10)
+            .fillColor('black')
+            .text(`Dirección: ${direccionEnvio}`)
+            .text(`Persona que recibe: ${personaRecibe}`)
+            .text(`Celular: ${numeroCelular}`)
+            .text(`Ciudad: ${ciudad}`)
+            .moveDown(1);
+
+        // Lista de productos
+        doc
+            .fontSize(12)
+            .fillColor('#27ae60')
+            .text('Productos:', { underline: true })
+            .moveDown(0.5);
+
+        // Iterar sobre los productos
+        productosConVendedor.forEach(prod => {
+            const cantidad = productos.find(p => p._id.toString() === prod._id.toString()).cantidad;
+            doc
+                .fontSize(10)
+                .fillColor('black')
+                .text(`- ${prod.titulo}: ${cantidad} unidades - $${prod.precio}`);
+        });
+
+        // Pie de página
+        doc
+            .moveDown(2)
+            .fontSize(10)
+            .fillColor('#aaaaaa')
+            .text('Arriba el Campo - Promoviendo la agricultura local', { align: 'center' });
+
+        // Finalizar el documento
+        doc.end();
+
 
         // Correo de confirmación para el cliente
         const customerMailOptions = {
@@ -110,42 +179,33 @@ exports.procesarPago = async (req, res) => {
             html: `
                 <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
                     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #dddddd;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <img src="https://arribaelcampo.store/assets/img/logo.ico" alt="Arriba el Campo" style="max-width: 100px;">
+                        </div>
                         <h2 style="color: #27ae60; text-align: center;">¡Gracias por tu compra!</h2>
                         <p style="font-size: 16px; color: #555555;">Estimado cliente,</p>
-                        <p style="font-size: 16px; color: #555555;">Tu pedido ha sido recibido exitosamente. ${paymentMessage}</p>
-                        <p style="font-size: 16px; color: #555555;">A continuación, te compartimos los detalles de tu compra:</p>
-                        <table style="width: 100%; margin-bottom: 20px;">
-                            <thead>
-                                <tr>
-                                    <th style="text-align: left; padding: 8px; color: #27ae60;">Producto</th>
-                                    <th style="text-align: right; padding: 8px; color: #27ae60;">Cantidad</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${productosConVendedor.map(prod => `
-                                    <tr>
-                                        <td style="padding: 8px; border-bottom: 1px solid #dddddd;">${prod.titulo}</td>
-                                        <td style="padding: 8px; text-align: right; border-bottom: 1px solid #dddddd;">${productos.find(p => p._id.toString() === prod._id.toString()).cantidad}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
+                        <p style="font-size: 16px; color: #555555;">Tu pedido ha sido recibido exitosamente.</p>
                         <h3 style="color: #27ae60;">Total: $${total}</h3>
                         <h4 style="color: #555555;">Información de envío:</h4>
                         <p>Dirección: ${direccionEnvio}</p>
                         <p>Persona que recibe: ${personaRecibe}</p>
                         <p>Celular: ${numeroCelular}</p>
                         <p>Ciudad: ${ciudad}</p>
-                        <p style="font-size: 16px; color: #555555;">Si tienes alguna duda, no dudes en contactarnos. ¡Gracias por confiar en Arriba el Campo!</p>
+                        <p style="font-size: 16px; color: #555555;">Adjunto encontrarás tu comprobante de pago en formato PDF.</p>
                         <p style="font-size: 14px; color: #aaaaaa; text-align: center;">Arriba el Campo - Promoviendo la agricultura local</p>
                     </div>
                 </div>
-            `
+            `,
+            attachments: [
+                {
+                    filename: `comprobante_pedido_${pedido._id}.pdf`,
+                    path: pdfPath,
+                    contentType: 'application/pdf'
+                }
+            ]
         };
 
-        console.log('Enviando correo al cliente...');
         await sendMail(customerMailOptions);
-        console.log('Correo enviado al cliente con éxito.');
 
         // Correo de notificación de creación de pedido para el usuario logueado
         const userMailOptions = {
@@ -155,6 +215,9 @@ exports.procesarPago = async (req, res) => {
             html: `
                 <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
                     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #dddddd;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <img src="https://arribaelcampo.store/assets/img/logo.ico" alt="Arriba el Campo" style="max-width: 100px;">
+                        </div>
                         <h2 style="color: #27ae60; text-align: center;">Tu pedido ha sido creado</h2>
                         <p style="font-size: 16px; color: #555555;">Estimado/a ${usuarioLogueado.nombres},</p>
                         <p style="font-size: 16px; color: #555555;">Nos complace informarte que tu pedido ha sido creado. Puedes seguir el estado de tu pedido en el siguiente enlace:</p>
@@ -167,9 +230,7 @@ exports.procesarPago = async (req, res) => {
             `
         };
 
-        console.log('Enviando correo al usuario logueado...');
         await sendMail(userMailOptions);
-        console.log('Correo enviado al usuario logueado con éxito.');
 
         // Agrupar productos por vendedor
         const productosPorVendedor = productosConVendedor.reduce((acc, producto) => {
@@ -196,7 +257,6 @@ exports.procesarPago = async (req, res) => {
 
         // Enviar correos a los vendedores
         const vendorMailPromises = Object.entries(productosPorVendedor).map(([vendedorId, vendedor]) => {
-            console.log(`Preparando correo para el vendedor con ID: ${vendedorId} y correo: ${vendedor.email}`);
 
             // Verificar si hay productos para el vendedor
             if (!vendedor.productos || vendedor.productos.length === 0) {
@@ -218,6 +278,9 @@ exports.procesarPago = async (req, res) => {
                 html: `
             <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
                 <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #dddddd;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img src="https://arribaelcampo.store/assets/img/logo.ico" alt="Arriba el Campo" style="max-width: 100px;">
+                    </div>
                     <h2 style="color: #27ae60; text-align: center;">Nuevo pedido recibido</h2>
                     <p style="font-size: 16px; color: #555555;">Has recibido un nuevo pedido de los siguientes productos:</p>
                     <ul style="list-style-type: none; padding: 0;">
@@ -233,14 +296,21 @@ exports.procesarPago = async (req, res) => {
         });
 
         // Esperar el envío de correos
-        console.log('Enviando correos a los vendedores...');
         await Promise.all(vendorMailPromises.filter(p => p !== null));
-        console.log('Correos enviados a los vendedores con éxito.');
 
         res.status(200).json({ message: 'Pago procesado, pedido creado y correos enviados' });
 
     } catch (error) {
         console.error('Error durante el procesamiento del pago:', error);
         res.status(500).json({ message: 'Error al procesar el pago', error });
+    } finally {
+        if (fs.existsSync(pdfPath)) {
+            fs.unlink(pdfPath, (err) => {
+                if (err) {
+                    console.error(`Error al eliminar el archivo PDF: ${pdfPath}`, err);
+                } else {
+                }
+            });
+        }
     }
 };

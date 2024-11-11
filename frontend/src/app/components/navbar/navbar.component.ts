@@ -37,6 +37,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   recoveryMessage: string = '';
   recoveryErrorMessage: string = '';
   isMenuOpen = false;
+  acceptTerms: boolean = false;
+  showTermsError: boolean = false;
 
   constructor(private sharedService: SharedService, private authService: AuthService, private router: Router, private cartService: CartService) { }
 
@@ -227,14 +229,15 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    // Verificar reCAPTCHA
-    if (!this.captchaResponse) {
-      this.errorMessage = 'Por favor completa el CAPTCHA.';
+    // Verificar si el usuario aceptó los términos y condiciones
+    if (!this.acceptTerms) {
+      this.showTermsError = true;
       return;
     }
 
     // Limpiar mensajes de error y continuar con el registro
     this.errorMessage = '';
+    this.showTermsError = false; // Ocultar el mensaje de error
     const registroData = { ...this.register, captchaToken: this.captchaResponse };
 
     this.authService.registrarUsuario(registroData).subscribe(

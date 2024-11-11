@@ -42,4 +42,9 @@ export class PedidoService {
   actualizarEstadoGeneral(pedidoId: number, nuevoEstado: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/actualizar-estado-general`, { pedidoId, nuevoEstado });
   }
+
+  obtenerTransportadores(): Observable<any> {
+    return this.http.get('https://arribaelcampo.store/api/pedido/transportadores');
+  }
+  
 }
