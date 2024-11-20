@@ -117,17 +117,17 @@ export class MisProductosComponent implements OnInit {
       formData.append('cantidadDisponible', this.productoSeleccionado.cantidadDisponible.toString());
       formData.append('ciudad', this.productoSeleccionado.ciudad);
       formData.append('estado', this.productoSeleccionado.estado);
-
+  
       // Añadir imágenes existentes
       this.existingPhotos.forEach(photo => {
         formData.append('fotosExistentes', photo);
       });
-
+  
       // Añadir nuevas imágenes seleccionadas
       this.photos.forEach(photo => {
         formData.append('nuevasFotos', photo);
       });
-
+  
       this.productService.actualizarProducto(this.productoSeleccionado._id, formData).subscribe(
         () => {
           Swal.fire('Producto actualizado', 'El producto ha sido actualizado correctamente.', 'success');
@@ -136,7 +136,7 @@ export class MisProductosComponent implements OnInit {
           if (index !== -1) {
             this.productos[index] = { ...this.productoSeleccionado };
           }
-
+  
           // Obtener productos actualizados
           this.productService.getProductsByUser(this.usuario._id).subscribe(
             (data: any) => {
@@ -147,7 +147,11 @@ export class MisProductosComponent implements OnInit {
               console.error('Error al obtener los productos:', error);
             }
           );
+  
+          // Limpiar el formulario y los arrays de imágenes
           this.productoSeleccionado = null; // Limpiar el formulario de edición
+          this.photos = []; // Limpiar nuevas fotos seleccionadas
+          this.existingPhotos = []; // Limpiar fotos existentes
         },
         (error) => {
           console.error('Error al actualizar el producto:', error);

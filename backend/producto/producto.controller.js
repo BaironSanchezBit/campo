@@ -93,22 +93,29 @@ exports.actualizarProducto = async (req, res) => {
             nuevasFotos = req.files['nuevasFotos'].map(file => file.filename);
         }
 
+        // Inicializar fotosFinales como un array vacío
         let fotosFinales = [];
+
+        // Validar y procesar fotosExistentes
         if (fotosExistentes) {
             if (typeof fotosExistentes === 'string') {
                 try {
+                    // Intentar convertir el string a un array
                     fotosFinales = JSON.parse(fotosExistentes);
                 } catch (error) {
                     console.error('Error al parsear fotosExistentes:', error);
-                    fotosFinales = [];
+                    // Manejar el error si no es un JSON válido
+                    fotosFinales = fotosExistentes.split(',').map(foto => foto.trim()); // Suponer que son valores separados por comas
                 }
             } else if (Array.isArray(fotosExistentes)) {
                 fotosFinales = fotosExistentes;
             }
         }
 
-        // Combina las fotos existentes con las nuevas
-        fotosFinales = fotosFinales.concat(nuevasFotos);
+        // Si hay nuevas fotos, añadirlas al array
+        if (nuevasFotos.length > 0) {
+            fotosFinales = fotosFinales.concat(nuevasFotos);
+        }
 
         // Actualiza el producto con la nueva información
         const productoActualizado = await Producto.findByIdAndUpdate(id, {
@@ -119,7 +126,7 @@ exports.actualizarProducto = async (req, res) => {
             cantidadDisponible,
             ciudad,
             estado,
-            fotos: fotosFinales  // Aquí se usa la combinación de fotos
+            fotos: fotosFinales // Combina imágenes existentes y nuevas
         }, { new: true });
 
         if (!productoActualizado) {
@@ -132,6 +139,7 @@ exports.actualizarProducto = async (req, res) => {
         res.status(500).json({ message: 'Error al actualizar el producto' });
     }
 };
+
 
 const eliminarArchivo = (ruta) => {
     fs.unlink(ruta, (error) => {

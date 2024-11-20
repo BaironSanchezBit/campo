@@ -9,8 +9,10 @@ const transporter = nodemailer.createTransport({
         user: 'no.reply.arribaelcampo@gmail.com',
         pass: 'vbdj zouh fppj loki'
     },
-    logger: true,
-    debug: true
+    pool: true,
+    rateLimit: true,
+    maxConnections: 5,
+    maxMessages: 10
 });
 
 

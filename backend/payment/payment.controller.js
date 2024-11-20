@@ -10,7 +10,11 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: 'no.reply.arribaelcampo@gmail.com',
         pass: 'vbdj zouh fppj loki'
-    }
+    },
+    pool: true,
+    rateLimit: true,
+    maxConnections: 5,
+    maxMessages: 10
 });
 
 // Función para enviar correos utilizando Promesas
