@@ -6,7 +6,7 @@ const productSchema = new Schema({
     descripcion: { type: String, required: true },
     tipo: { type: String, required: true },
     precio: { type: Number, required: true },
-    cantidadDisponible: { type: Number, required: true, min: 1 },
+    cantidadDisponible: { type: Number, required: true, min: 0 },
     ciudad: { type: String, required: true },
     fotos: [{ type: String }],
     estado: { type: String, enum: ['disponible', 'agotado', 'proximamente'], default: 'disponible' },

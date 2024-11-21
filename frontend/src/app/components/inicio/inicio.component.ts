@@ -38,15 +38,14 @@ export class InicioComponent {
 
   obtenerProductos() {
     this.http.get('https://arribaelcampo.store/api/productos').subscribe((data: any) => {
-      // Filtrar productos con estado 'disponible' y tomar los últimos 6
-      this.productos = data
-        .filter((producto: any) => producto.estado === 'disponible') // Filtra los productos disponibles
-        .slice(-6); // Obtiene los últimos 6 productos disponibles
+      // Filtrar productos disponibles y aprobados
+      this.productos = data.filter((producto: any) => 
+        producto.estado === 'disponible' && producto.estadoCalidad === 'aprobado'
+      );
     }, error => {
       console.error('Error al obtener productos:', error);
     });
   }
-  
 
   getFotoUrl(foto: string): string {
     return `https://arribaelcampo.store/uploads/${foto}`;

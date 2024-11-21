@@ -23,6 +23,11 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { ProductoDetalleComponent } from './components/producto-detalle/producto-detalle.component';
 import { CalidadComponent } from './components/calidad/calidad.component';
 import { CalificarComponent } from './components/calificar/calificar.component';
+import { EstadisticasComponent } from './components/estadisticas/estadisticas.component';
+import { AuditarComponent } from './components/auditar/auditar.component';
+import { ContratoCompradorComponent } from './components/contrato-comprador/contrato-comprador.component';
+import { ContratoVendedorComponent } from './components/contrato-vendedor/contrato-vendedor.component';
+import { GananciasComponent } from './components/ganancias/ganancias.component';
 
 export const routes: Routes = [
     { path: '', component: InicioComponent },
@@ -48,6 +53,11 @@ export const routes: Routes = [
     { path: 'reset-password/:token', component: ResetPasswordComponent },
     { path: 'producto/:id', component: ProductoDetalleComponent },
     { path: 'calidad', component: CalidadComponent },
+    { path: 'mis-estadisticas', component: EstadisticasComponent },
+    { path: 'auditar', component: AuditarComponent },
+    { path: 'ganancias', component: GananciasComponent },
+    { path: 'contrato-comprador', component: ContratoCompradorComponent },
+    { path: 'contrato-vendedor', component: ContratoVendedorComponent },
     { path: 'calificar/:id', component: CalificarComponent },
     { path: '', redirectTo: '', pathMatch: 'full' }
 ];

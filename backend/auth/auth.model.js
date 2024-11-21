@@ -9,7 +9,12 @@ const userSchema = new mongoose.Schema({
     fotoPerfil: { type: String },
     celular: { type: String, required: true },
     rol: { type: String, enum: ['comprador', 'vendedor', 'admin', 'empresa', 'transportador'], default: 'comprador' },
-    verificado: { type: Boolean, default: false } // Agregar el campo verificado
+    verificado: { type: Boolean, default: false },
+    ubicacionFinca: { type: String },
+    nombreFinca: { type: String },
+    hectareasProduccion: { type: Number },
+    documentoVerificacion: { type: String }, // URL o ruta al documento
+    estado: { type: String, enum: ['Pendiente', 'Aprobado', 'Rechazado', 'Para Verificar'], default: 'Pendiente' },
 });
 
 // Encriptar la contraseña antes de guardar

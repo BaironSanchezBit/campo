@@ -365,3 +365,124 @@ exports.obtenerUsuarioConCalificaciones = async (req, res) => {
         res.status(500).json({ msg: 'Error en el servidor' });
     }
 };
+
+exports.actualizarVendedor = async (req, res) => {
+    const { id } = req.params;
+    const { ubicacionFinca, nombreFinca, hectareasProduccion } = req.body;
+
+    try {
+        // Preparar los datos para la actualización
+        const datosActualizados = {
+            ubicacionFinca,
+            nombreFinca,
+            hectareasProduccion,
+            estado: 'Para Verificar', // Cambiar automáticamente el estado a "Para Verificar"
+        };
+
+        // Si hay un archivo de verificación, también incluirlo
+        if (req.file) {
+            datosActualizados.documentoVerificacion = req.file.filename;
+        }
+
+        // Actualizar el vendedor en la base de datos
+        const vendedorActualizado = await Usuario.findByIdAndUpdate(id, datosActualizados, { new: true });
+
+        if (!vendedorActualizado) {
+            return res.status(404).json({ msg: 'Vendedor no encontrado' });
+        }
+
+        res.json({ msg: 'Vendedor actualizado con éxito', vendedor: vendedorActualizado });
+    } catch (error) {
+        console.error('Error al actualizar el vendedor:', error);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};
+
+exports.obtenerUsuarioPorId = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const usuario = await Usuario.findById(id, '-contrasena');
+        if (!usuario) {
+            return res.status(404).json({ msg: 'Usuario no encontrado' });
+        }
+        res.json(usuario);
+    } catch (error) {
+        console.error('Error al obtener el usuario:', error);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};
+
+exports.obtenerVendedoresParaVerificar = async (req, res) => {
+    try {
+        const vendedores = await Usuario.find({ rol: 'vendedor', estado: 'Para Verificar' }, '-contrasena');
+        if (!vendedores || vendedores.length === 0) {
+            return res.status(404).json({ msg: 'No hay vendedores para verificar.' });
+        }
+        res.json(vendedores);
+    } catch (error) {
+        console.error('Error al obtener vendedores para verificar:', error);
+        res.status(500).json({ msg: 'Error en el servidor.' });
+    }
+};
+
+exports.actualizarEstadoVendedor = async (req, res) => {
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    try {
+        // Actualiza el estado del vendedor
+        const vendedor = await Usuario.findByIdAndUpdate(id, { estado }, { new: true });
+        if (!vendedor) {
+            return res.status(404).json({ msg: 'Vendedor no encontrado' });
+        }
+
+        // Mensaje de correo basado en el estado
+        let asunto = '';
+        let mensaje = '';
+
+        if (estado === 'Aprobado') {
+            asunto = '¡Tu cuenta ha sido aprobada!';
+            mensaje = `
+                <p>Hola ${vendedor.nombres},</p>
+                <p>Nos complace informarte que tu cuenta como vendedor ha sido <strong>aprobada</strong>.</p>
+                <p>Ahora puedes comenzar a publicar productos en nuestra plataforma.</p>
+                <p>Gracias por ser parte de Arriba el Campo.</p>
+            `;
+        } else if (estado === 'Rechazado') {
+            asunto = 'Estado de tu cuenta en Arriba el Campo';
+            mensaje = `
+                <p>Hola ${vendedor.nombres},</p>
+                <p>Lamentamos informarte que tu cuenta como vendedor ha sido <strong>rechazada</strong>.</p>
+                <p>Por favor verifica que toda la documentación enviada sea correcta o contacta con nosotros para más detalles.</p>
+                <p>Gracias por tu comprensión.</p>
+            `;
+        }
+
+        // Enviar correo al vendedor
+        const mailOptions = {
+            from: 'no.reply.arribaelcampo@gmail.com',
+            to: vendedor.correo,
+            subject: asunto,
+            html: `
+                <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+                    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #dddddd;">
+                        <h2 style="color: #27ae60; text-align: center;">Arriba el Campo</h2>
+                        ${mensaje}
+                        <p style="text-align: center; margin-top: 20px; color: #555555;">Arriba el Campo - Promoviendo la agricultura local</p>
+                    </div>
+                </div>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        // Obtén la lista actualizada de vendedores con estado "Para Verificar"
+        const vendedores = await Usuario.find({ rol: 'vendedor', estado: 'Para Verificar' });
+
+        res.json({ msg: 'Estado del vendedor actualizado con éxito y correo enviado', vendedores });
+    } catch (error) {
+        console.error('Error al actualizar el estado del vendedor:', error);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};

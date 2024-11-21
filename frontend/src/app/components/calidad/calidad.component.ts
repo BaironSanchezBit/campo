@@ -85,7 +85,7 @@ export class CalidadComponent implements OnInit {
   }
 
   getFotoUrl(foto: string): string {
-    return `http://localhost:4000/uploads/${foto}`; // Ajusta esta URL según tu configuración de backend
+    return `https://arribaelcampo.store/uploads/${foto}`; // Ajusta esta URL según tu configuración de backend
   }
 
   abrirModalRechazo(producto: any): void {

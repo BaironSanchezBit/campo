@@ -47,4 +47,7 @@ export class PedidoService {
     return this.http.get('https://arribaelcampo.store/api/pedido/transportadores');
   }
   
+  obtenerComisiones(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/comisiones`);
+  }
 }

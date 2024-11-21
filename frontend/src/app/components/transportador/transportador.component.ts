@@ -8,6 +8,7 @@ import { PedidoService } from '../../services/pedido.service';
 import { FooterComponent } from '../footer/footer.component';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { AuthService } from '../../services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-transportador',
@@ -50,13 +51,39 @@ export class TransportadorComponent implements OnInit {
   }
 
   cambiarEstadoGeneral(pedidoId: number, nuevoEstado: string) {
+    // Mostrar una alerta de carga
+    Swal.fire({
+      title: 'Actualizando estado...',
+      text: `Cambiando estado a "${nuevoEstado}"`,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     this.pedidoService.actualizarEstadoGeneral(pedidoId, nuevoEstado).subscribe(
       (response) => {
-        console.log('Estado general del pedido actualizado:', response);
-        this.obtenerPedidosPorTransportador(this.transportadorId); // Recargar pedidos para reflejar cambios
+        // Cerrar la alerta de carga y mostrar un mensaje de éxito
+        Swal.fire({
+          icon: 'success',
+          title: 'Estado actualizado',
+          text: `El pedido ha sido marcado como "${nuevoEstado}"`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+
+        // Recargar los pedidos para reflejar cambios
+        this.obtenerPedidosPorTransportador(this.transportadorId);
       },
       (error) => {
         console.error('Error al actualizar el estado general del pedido', error);
+
+        // Mostrar un mensaje de error
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un problema al actualizar el estado del pedido.',
+        });
       }
     );
   }

@@ -39,6 +39,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   isMenuOpen = false;
   acceptTerms: boolean = false;
   showTermsError: boolean = false;
+  acceptContracts: boolean = false;
+  showContractsError: boolean = false;
+  passwordError: string | null = null;
 
   constructor(private sharedService: SharedService, private authService: AuthService, private router: Router, private cartService: CartService) { }
 
@@ -81,6 +84,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         this.recoveryMessage = '';
       }
     );
+  }
+
+  verificarContrasena() {
+    this.passwordError = this.validarContrasena(this.register.contrasena);
   }
 
   resolved(captchaResponse: string): void {
@@ -228,16 +235,26 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       this.errorMessage = 'Por favor selecciona un rol.';
       return;
     }
-
+    if (!this.acceptContracts) {
+      this.showContractsError = true;
+      return;
+    }
     // Verificar si el usuario aceptó los términos y condiciones
     if (!this.acceptTerms) {
       this.showTermsError = true;
       return;
     }
-
+    // Validar complejidad de la contraseña
+    const error = this.validarContrasena(this.register.contrasena);
+    if (error) {
+      this.errorMessage = error;
+      return;
+    }
+    
     // Limpiar mensajes de error y continuar con el registro
     this.errorMessage = '';
     this.showTermsError = false; // Ocultar el mensaje de error
+    this.showContractsError = false;
     const registroData = { ...this.register, captchaToken: this.captchaResponse };
 
     this.authService.registrarUsuario(registroData).subscribe(
@@ -259,6 +276,22 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  validarContrasena(contrasena: string): string | null {
+    if (contrasena.length < 8) {
+      return 'La contraseña debe tener al menos 8 caracteres.';
+    }
+    if (!/[A-Z]/.test(contrasena)) {
+      return 'La contraseña debe incluir al menos una letra mayúscula.';
+    }
+    if (!/[0-9]/.test(contrasena)) {
+      return 'La contraseña debe incluir al menos un número.';
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(contrasena)) {
+      return 'La contraseña debe incluir al menos un carácter especial.';
+    }
+    return null; // Contraseña válida
   }
 
   cerrarSesion() {

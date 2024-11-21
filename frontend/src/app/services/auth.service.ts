@@ -6,7 +6,7 @@ import { Observable, throwError } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:4000/api/auth';
+  private apiUrl = 'https://arribaelcampo.store/api/auth';
 
   constructor(private http: HttpClient) { }
 
@@ -96,5 +96,25 @@ export class AuthService {
   obtenerUsuarioConCalificaciones(id: string): Observable<any> {
     const headers = this.obtenerHeaders();
     return this.http.get(`${this.apiUrl}/usuario/${id}/calificaciones`, { headers });
-  }  
+  }
+
+  actualizarVendedor(id: string, data: any): Observable<any> {
+    const headers = this.obtenerHeaders();
+    return this.http.put(`${this.apiUrl}/vendedor/${id}`, data, { headers });
+  }
+
+  obtenerUsuarioPorId(id: string): Observable<any> {
+    const headers = this.obtenerHeaders();
+    return this.http.get(`${this.apiUrl}/usuario/${id}`, { headers });
+  }
+
+  obtenerVendedoresParaVerificar(): Observable<any> {
+    const headers = this.obtenerHeaders();
+    return this.http.get(`${this.apiUrl}/vendedores/para-verificar`, { headers });
+  }
+
+  actualizarEstadoVendedor(id: string, estado: string): Observable<any> {
+    const headers = this.obtenerHeaders();
+    return this.http.put(`${this.apiUrl}/vendedor/${id}/estado`, { estado }, { headers });
+  }
 }

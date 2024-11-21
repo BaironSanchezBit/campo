@@ -9,7 +9,8 @@ const {
     asignarTransportador,
     obtenerPedidosPorTransportador,
     actualizarEstadoGeneralPedido,
-    obtenerTransportadores } = require('./pedido.controller');
+    obtenerTransportadores,
+    obtenerComisiones } = require('./pedido.controller');
 const router = express.Router();
 
 router.get('/comprador/:usuarioId', obtenerPedidosComprador);
@@ -22,6 +23,7 @@ router.post('/asignar-transportador', asignarTransportador);
 router.get('/por-transportador/:transportadorId', obtenerPedidosPorTransportador);
 router.post('/actualizar-estado-general', actualizarEstadoGeneralPedido);
 router.get('/transportadores', obtenerTransportadores);
+router.get('/comisiones', obtenerComisiones);
 
 
 module.exports = router;

@@ -1,6 +1,24 @@
 <app-navbar></app-navbar>
 
-<form (ngSubmit)="actualizarPerfil()" class="max-w-3xl mt-32 mx-auto bg-white p-8 shadow-lg rounded-lg">
+<div class="text-center mt-32">
+    <h2 class="text-xl font-bold text-gray-800">Calificación Promedio</h2>
+    <div class="flex justify-center space-x-1 mt-4">
+        <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
+            <!-- Estrella llena -->
+            <i *ngIf="calificacionPromedio >= i + 1" class="fa fa-star text-yellow-500"></i>
+            <!-- Media estrella -->
+            <i *ngIf="calificacionPromedio >= i + 0.5 && calificacionPromedio < i + 1"
+                class="fa fa-star-half-alt text-yellow-500"></i>
+            <!-- Estrella vacía -->
+            <i *ngIf="calificacionPromedio < i + 0.5" class="fa fa-star text-gray-300"></i>
+        </ng-container>
+    </div>
+    <p class="text-gray-600 mt-2">
+        Calificación: {{ calificacionPromedio | number: '1.1-1' }}
+    </p>
+</div>
+
+<form (ngSubmit)="actualizarPerfil()" class="max-w-3xl mx-auto bg-white p-8 shadow-lg rounded-lg">
     <div class="space-y-12">
         <div class="border-b border-gray-300 pb-6">
             <h2 class="text-lg font-bold leading-7 text-gray-800">Perfil</h2>
@@ -50,10 +68,6 @@
         </div>
 
         <div class="mt-8 flex items-center justify-end gap-x-4">
-            <button type="button"
-                class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">
-                Cancelar
-            </button>
             <button type="submit"
                 class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
                 Guardar
@@ -62,4 +76,60 @@
     </div>
 </form>
 
-<app-navbar></app-navbar>
+<div *ngIf="usuario.rol === 'vendedor'" class="max-w-3xl mx-auto my-8 bg-white p-8 shadow-lg rounded-lg">
+    <h3 class="text-lg font-bold leading-7 text-gray-800">Información del vendedor <span [ngClass]="{'aprobado': usuario.estado === 'Aprobado',
+                'rechazado': usuario.estado === 'Rechazado',
+                'verificando': usuario.estado === 'Para Verificar'
+            }"><span *ngIf="usuario.estado === 'Para Verificar'">Verificando</span><span
+                *ngIf="usuario.estado !== 'Para Verificar'">{{usuario.estado}}</span></span></h3>
+    <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
+        <div class="sm:col-span-3">
+            <label for="nombreFinca" class="block text-sm font-medium text-gray-700">Nombre de la finca</label>
+            <input type="text" id="nombreFinca" [(ngModel)]="usuario.nombreFinca" name="nombreFinca"
+                [disabled]="usuario.estado === 'Para Verificar' || usuario.estado === 'Aprobado'" class="block w-full rounded-md border border-gray-300 py-2 px-3 text-gray-900 shadow-sm
+            focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 sm:text-sm">
+        </div>
+
+        <div class="sm:col-span-3">
+            <label for="ubicacionFinca" class="block text-sm font-medium text-gray-700">Ubicación de la finca</label>
+            <input type="text" id="ubicacionFinca" [(ngModel)]="usuario.ubicacionFinca" name="ubicacionFinca"
+                [disabled]="usuario.estado === 'Para Verificar' || usuario.estado === 'Aprobado'" class="block w-full rounded-md border border-gray-300 py-2 px-3 text-gray-900 shadow-sm
+            focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 sm:text-sm">
+        </div>
+
+        <div class="sm:col-span-2">
+            <label for="hectareasProduccion" class="block text-sm font-medium text-gray-700">Hectáreas de
+                producción</label>
+            <input type="number" id="hectareasProduccion" [(ngModel)]="usuario.hectareasProduccion"
+                name="hectareasProduccion" [disabled]="usuario.estado === 'Para Verificar' || usuario.estado === 'Aprobado'" class="block w-full rounded-md border border-gray-300 py-2 px-3 text-gray-900 shadow-sm
+            focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 sm:text-sm">
+        </div>
+
+        <div class="sm:col-span-4">
+            <label for="documentoVerificacion" class="block text-sm font-medium text-gray-700">
+                Documento de Verificación
+            </label>
+            <div class="mt-2">
+                <input type="file" id="documentoVerificacion" (change)="onFileSelected($event)"
+                    [disabled]="usuario.estado === 'Para Verificar' || usuario.estado === 'Aprobado'"
+                    class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
+            </div>
+            <div class="mt-4 flex items-center" *ngIf="usuario.documentoVerificacion">
+                <i class="fa fa-file text-gray-500 text-2xl mr-2"></i>
+                <a [href]="getFotoUrl(usuario.documentoVerificacion)" target="_blank"
+                    class="text-indigo-600 hover:underline">
+                    Ver documento
+                </a>
+            </div>
+        </div>
+
+        <div  *ngIf="usuario.estado === 'Para Verificar' && usuario.estado === 'Aprobado'" class="sm:col-span-6 mt-8 flex items-center justify-end gap-x-4">
+            <button type="button" (click)="actualizarVendedor()" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
+                Enviar
+            </button>
+        </div>
+    </div>
+</div>
+
+<app-footer></app-footer>

@@ -19,3 +19,15 @@ exports.crearCalificacion = async (req, res) => {
         res.status(500).json({ msg: 'Error al crear la calificación', error });
     }
 };
+
+exports.obtenerCalificacionesPorUsuario = async (req, res) => {
+    const { evaluadoId } = req.params;
+
+    try {
+        const calificaciones = await Calificacion.find({ evaluadoId });
+        res.status(200).json(calificaciones);
+    } catch (error) {
+        console.error('Error al obtener calificaciones:', error);
+        res.status(500).json({ msg: 'Error al obtener calificaciones', error });
+    }
+};

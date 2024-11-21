@@ -1,7 +1,7 @@
 const Pedido = require('./pedido.model');
 const nodemailer = require('nodemailer');
 const Usuario = require('../auth/auth.model');
-
+const Comision = require('../comision/comision.model');
 // Configuración del transporte de correo
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -30,41 +30,25 @@ async function sendMail(mailOptions) {
     }
 }
 
-
 const enviarCorreosCambioEstado = async (pedido, nuevoEstado) => {
     try {
-        // Obtener el correo del comprador
         const comprador = await Usuario.findById(pedido.compradorId);
         if (!comprador || !comprador.correo) {
             throw new Error('Correo del comprador no encontrado');
         }
 
-        // Crear correo para el comprador
-        const customerMailOptions = {
-            from: 'no.reply.arribaelcampo@gmail.com',
-            to: comprador.correo,
-            subject: `Tu pedido está ${nuevoEstado} - Arriba el Campo`,
-            html: `
-                <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
-                    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #dddddd;">
-                        <h2 style="color: #27ae60; text-align: center;">Tu pedido está ${nuevoEstado}</h2>
-                        <p style="font-size: 16px; color: #555555;">Estimado/a ${comprador.nombres},</p>
-                        <p style="font-size: 16px; color: #555555;">Nos complace informarte que tu pedido con ID <strong>${pedido.pedidoId}</strong> está ahora ${nuevoEstado}.</p>
-                        <p style="text-align: center; margin-top: 20px;">
-                            <a href="https://arribaelcampo.store/seguimiento/${pedido.pedidoId}" style="background-color: #27ae60; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Seguir pedido</a>
-                        </p>
-                        <p style="font-size: 14px; color: #aaaaaa; text-align: center;">Arriba el Campo - Promoviendo la agricultura local</p>
-                    </div>
-                </div>
-            `
-        };
+        const transportador = await Usuario.findById(pedido.transportadorId);
+        if (!transportador || !transportador.correo) {
+            throw new Error('Correo del transportador no encontrado');
+        }
 
-        // Agrupar productos por vendedor para evitar correos duplicados
+        // Agrupar productos por vendedor
         const productosPorVendedor = pedido.productos.reduce((acc, producto) => {
             const vendedorId = producto.vendedorId._id.toString();
             if (!acc[vendedorId]) {
                 acc[vendedorId] = {
                     email: producto.vendedorId.correo,
+                    nombre: producto.vendedorId.nombres,
                     productos: []
                 };
             }
@@ -72,40 +56,154 @@ const enviarCorreosCambioEstado = async (pedido, nuevoEstado) => {
             return acc;
         }, {});
 
-        // Enviar correos a los vendedores
-        const vendorMailPromises = Object.values(productosPorVendedor).map(vendedor => {
-            if (!vendedor.email || vendedor.email.trim() === '') {
-                console.warn(`Correo electrónico del vendedor no encontrado para el vendedor con ID ${vendedor._id}`);
-                return null; // Saltar este vendedor si no tiene correo
-            }
+        // Enlaces de calificación
+        const calificarTransportadorButton = `
+            <a href="https://arribaelcampo.store/calificar/${transportador._id}" 
+                style="display: inline-block; background-color: #27ae60; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">
+                Calificar Transportador
+            </a>`;
 
-            const productoDetalles = vendedor.productos.map(prod => `<li>${prod.productoId.titulo} - ${prod.cantidad} unidades</li>`).join('');
-            const vendorMailOptions = {
+        const calificarCompradorButton = `
+            <a href="https://arribaelcampo.store/calificar/${comprador._id}" 
+                style="display: inline-block; background-color: #27ae60; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">
+                Calificar Comprador
+            </a>`;
+
+        // Correos si el estado es "Entregado"
+        if (nuevoEstado === 'Entregado') {
+            // Correo al comprador
+            const customerMailOptions = {
                 from: 'no.reply.arribaelcampo@gmail.com',
-                to: vendedor.email,
-                subject: `Actualización de estado de pedido - Arriba el Campo`,
+                to: comprador.correo,
+                subject: `Tu pedido ha sido entregado - Arriba el Campo`,
                 html: `
-                    <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
-                        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #dddddd;">
-                            <h2 style="color: #27ae60; text-align: center;">Actualización de estado de pedido</h2>
-                            <p style="font-size: 16px; color: #555555;">Estimado/a vendedor/a,</p>
-                            <p style="font-size: 16px; color: #555555;">El pedido con ID <strong>${pedido.pedidoId}</strong> ha cambiado su estado a <strong>${nuevoEstado}</strong>. A continuación, los productos que forman parte de este pedido:</p>
-                            <ul style="list-style-type: none; padding: 0;">
-                                ${productoDetalles}
-                            </ul>
-                            <p style="font-size: 14px; color: #aaaaaa; text-align: center;">Arriba el Campo - Promoviendo la agricultura local</p>
+                    <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+                        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #e0e0e0;">
+                            <h2 style="color: #27ae60; text-align: center;">Tu pedido ha sido entregado</h2>
+                            <p>Hola <strong>${comprador.nombres}</strong>,</p>
+                            <p>Tu pedido con ID <strong>${pedido.pedidoId}</strong> ha sido entregado exitosamente.</p>
+                            <p>Por favor, califica al transportador:</p>
+                            <div style="text-align: center; margin-top: 20px;">
+                                ${calificarTransportadorButton}
+                            </div>
+                            <p style="font-size: 14px; color: #aaa; text-align: center;">Arriba el Campo - Promoviendo la agricultura local</p>
                         </div>
-                    </div>
-                `
+                    </div>`
             };
 
-            return sendMail(vendorMailOptions);
-        });
+            // Correo al transportador
+            const transporterMailOptions = {
+                from: 'no.reply.arribaelcampo@gmail.com',
+                to: transportador.correo,
+                subject: `Has completado un pedido - Arriba el Campo`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+                        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #e0e0e0;">
+                            <h2 style="color: #27ae60; text-align: center;">Has completado un pedido</h2>
+                            <p>Hola <strong>${transportador.nombres}</strong>,</p>
+                            <p>El pedido con ID <strong>${pedido.pedidoId}</strong> ha sido entregado exitosamente.</p>
+                            <p>Por favor, califica al comprador:</p>
+                            <div style="text-align: center; margin-top: 20px;">
+                                ${calificarCompradorButton}
+                            </div>
+                            <p style="font-size: 14px; color: #aaa; text-align: center;">Arriba el Campo - Promoviendo la agricultura local</p>
+                        </div>
+                    </div>`
+            };
 
-        // Enviar correos (cliente y vendedores)
-        await sendMail(customerMailOptions);  // Enviar al cliente
-        await Promise.all(vendorMailPromises.filter(p => p !== null)); // Filtrar correos nulos y enviarlos
+            // Correos a los vendedores
+            const vendorMailPromises = Object.entries(productosPorVendedor).map(([vendedorId, vendedor]) => {
+                const productosDetalles = vendedor.productos
+                    .map(prod => `<li>${prod.productoId.titulo} - ${prod.cantidad} unidades</li>`)
+                    .join('');
+                const calificarCompradorButtonForVendor = `
+                    <a href="https://arribaelcampo.store/calificar/${comprador._id}" 
+                        style="display: inline-block; background-color: #27ae60; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">
+                        Calificar Comprador
+                    </a>`;
+                const calificarVendedorButtonForCustomer = `
+                    <a href="https://arribaelcampo.store/calificar/${vendedorId}" 
+                        style="display: inline-block; background-color: #27ae60; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">
+                        Calificar Vendedor
+                    </a>`;
 
+                // Correo al vendedor
+                const vendorMailOptions = {
+                    from: 'no.reply.arribaelcampo@gmail.com',
+                    to: vendedor.email,
+                    subject: `Pedido entregado - Arriba el Campo`,
+                    html: `
+                        <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+                            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #e0e0e0;">
+                                <h2 style="color: #27ae60; text-align: center;">Pedido entregado</h2>
+                                <p>Hola <strong>${vendedor.nombre}</strong>,</p>
+                                <p>El pedido con ID <strong>${pedido.pedidoId}</strong> ha sido entregado exitosamente.</p>
+                                <p>Productos vendidos:</p>
+                                <ul>${productosDetalles}</ul>
+                                <p>Por favor, califica al comprador:</p>
+                                <div style="text-align: center; margin-top: 20px;">
+                                    ${calificarCompradorButtonForVendor}
+                                </div>
+                                <p style="font-size: 14px; color: #aaa; text-align: center;">Arriba el Campo - Promoviendo la agricultura local</p>
+                            </div>
+                        </div>`
+                };
+
+                // Correo al comprador para calificar al vendedor
+                const customerToVendorMailOptions = {
+                    from: 'no.reply.arribaelcampo@gmail.com',
+                    to: comprador.correo,
+                    subject: `Por favor, califica a tu vendedor - Arriba el Campo`,
+                    html: `
+                        <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+                            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #e0e0e0;">
+                                <h2 style="color: #27ae60; text-align: center;">¡Califica a tu vendedor!</h2>
+                                <p>Hola <strong>${comprador.nombres}</strong>,</p>
+                                <p>El vendedor <strong>${vendedor.nombre}</strong> participó en tu pedido con ID <strong>${pedido.pedidoId}</strong>.</p>
+                                <p>Por favor, califícalo haciendo clic en el siguiente botón:</p>
+                                <div style="text-align: center; margin-top: 20px;">
+                                    ${calificarVendedorButtonForCustomer}
+                                </div>
+                                <p style="font-size: 14px; color: #aaa; text-align: center;">Arriba el Campo - Promoviendo la agricultura local</p>
+                            </div>
+                        </div>`
+                };
+
+                // Enviar ambos correos
+                return Promise.all([
+                    sendMail(vendorMailOptions), // Al vendedor
+                    sendMail(customerToVendorMailOptions) // Al comprador
+                ]);
+            });
+
+            // Enviar todos los correos
+            await sendMail(customerMailOptions); // Al comprador
+            await sendMail(transporterMailOptions); // Al transportador
+            await Promise.all(vendorMailPromises.flat()); // Correos a los vendedores y al comprador hacia los vendedores
+        }
+
+        // Correo al comprador si el estado es "Camino a tu dirección"
+        if (nuevoEstado === 'Camino a tu dirección') {
+            const caminoMailOptions = {
+                from: 'no.reply.arribaelcampo@gmail.com',
+                to: comprador.correo,
+                subject: `Tu pedido está en camino - Arriba el Campo`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+                        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #e0e0e0;">
+                            <h2 style="color: #27ae60; text-align: center;">Tu pedido está en camino</h2>
+                            <p>Hola <strong>${comprador.nombres}</strong>,</p>
+                            <p>Tu pedido con ID <strong>${pedido.pedidoId}</strong> está en camino a tu dirección:</p>
+                            <p><strong>${pedido.direccionEnvio}</strong>, ${pedido.ciudad}</p>
+                            <p>Persona que recibirá:</p>
+                            <p><strong>${pedido.personaRecibe}</strong> - Tel: ${pedido.numeroCelular}</p>
+                            <p style="font-size: 14px; color: #aaa; text-align: center;">Arriba el Campo - Promoviendo la agricultura local</p>
+                        </div>
+                    </div>`
+            };
+
+            await sendMail(caminoMailOptions);
+        }
     } catch (error) {
         console.error(`Error al enviar los correos para el estado ${nuevoEstado}:`, error);
     }
@@ -325,6 +423,7 @@ exports.actualizarEstadoGeneralPedido = async (req, res) => {
             .populate('productos.productoId')
             .populate('productos.vendedorId')
             .populate('compradorId');
+
         if (!pedido) {
             return res.status(404).json({ message: 'Pedido no encontrado' });
         }
@@ -336,71 +435,11 @@ exports.actualizarEstadoGeneralPedido = async (req, res) => {
         // Guardar el pedido actualizado
         await pedido.save();
 
-        // Si el estado es "Entregado", enviar correos a todos
-        if (nuevoEstado === 'Entregado') {
-            // Enviar correo al comprador
-            const comprador = pedido.compradorId;
-            const vendedoresIds = pedido.productos.map(prod => prod.vendedorId._id.toString());
-            const calificarVendedoresLinks = vendedoresIds
-                .map(id => `<a href="http://localhost:4200/calificar/${id}">Calificar vendedor</a>`)
-                .join('<br>');
-
-            const compradorMailOptions = {
-                from: 'no.reply.arribaelcampo@gmail.com',
-                to: comprador.correo,
-                subject: `Tu pedido ha sido entregado - Arriba el Campo`,
-                html: `
-                    <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
-                        <h2 style="color: #27ae60; text-align: center;">Tu pedido ha sido entregado</h2>
-                        <p>Gracias por confiar en nosotros. Tu pedido con ID <strong>${pedido.pedidoId}</strong> ha sido entregado exitosamente.</p>
-                        <p>Por favor, califica a los vendedores:</p>
-                        ${calificarVendedoresLinks}
-                        <p style="font-size: 14px; color: #aaaaaa; text-align: center;">Arriba el Campo - Promoviendo la agricultura local</p>
-                    </div>
-                `
-            };
-            await sendMail(compradorMailOptions);
-
-            // Agrupar productos por vendedor para enviar correos individuales
-            const productosPorVendedor = pedido.productos.reduce((acc, producto) => {
-                const vendedorId = producto.vendedorId._id.toString();
-                if (!acc[vendedorId]) {
-                    acc[vendedorId] = {
-                        email: producto.vendedorId.correo,
-                        nombre: producto.vendedorId.nombres,
-                        productos: []
-                    };
-                }
-                acc[vendedorId].productos.push(producto);
-                return acc;
-            }, {});
-
-            // Enviar correos a cada vendedor
-            const vendorMailPromises = Object.entries(productosPorVendedor).map(([vendedorId, vendedor]) => {
-                const productosDetalles = vendedor.productos
-                    .map(prod => `<li>${prod.productoId.titulo} - ${prod.cantidad} unidades</li>`)
-                    .join('');
-                const calificarCompradorLink = `<a href="http://localhost:4200/calificar/${comprador._id}">Calificar comprador</a>`;
-
-                const vendorMailOptions = {
-                    from: 'no.reply.arribaelcampo@gmail.com',
-                    to: vendedor.email,
-                    subject: `Pedido entregado - Arriba el Campo`,
-                    html: `
-                        <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
-                            <h2 style="color: #27ae60; text-align: center;">Pedido entregado</h2>
-                            <p>El pedido con ID <strong>${pedido.pedidoId}</strong> ha sido entregado exitosamente. Aquí están los detalles de tus productos vendidos:</p>
-                            <ul>${productosDetalles}</ul>
-                            <p>Por favor, califica al comprador:</p>
-                            ${calificarCompradorLink}
-                            <p style="font-size: 14px; color: #aaaaaa; text-align: center;">Arriba el Campo - Promoviendo la agricultura local</p>
-                        </div>
-                    `
-                };
-                return sendMail(vendorMailOptions);
-            });
-
-            await Promise.all(vendorMailPromises);
+        // Llamar a `enviarCorreosCambioEstado` con base en el estado
+        if (nuevoEstado === 'Camino a tu dirección') {
+            await enviarCorreosCambioEstado(pedido, nuevoEstado, false); // Sin calificación
+        } else if (nuevoEstado === 'Entregado') {
+            await enviarCorreosCambioEstado(pedido, nuevoEstado, true); // Con calificación
         }
 
         res.status(200).json({ message: 'Estado del pedido actualizado con éxito', pedido });
@@ -420,5 +459,58 @@ exports.obtenerTransportadores = async (req, res) => {
     } catch (error) {
         console.error('Error al obtener transportadores:', error);
         res.status(500).json({ message: 'Error al obtener transportadores', error });
+    }
+};
+
+exports.actualizarEstadoGeneralPedido = async (req, res) => {
+    const { pedidoId, nuevoEstado } = req.body;
+
+    try {
+        // Buscar el pedido por su ID
+        const pedido = await Pedido.findOne({ pedidoId })
+            .populate('productos.productoId')
+            .populate('productos.vendedorId')
+            .populate('compradorId');
+
+        if (!pedido) {
+            return res.status(404).json({ message: 'Pedido no encontrado' });
+        }
+
+        // Actualizar el estado general del pedido
+        pedido.estadoGeneral = nuevoEstado;
+        pedido.fechaActualizacion = new Date();
+
+        // Si el nuevo estado es "Entregado", calcular el 3% y guardarlo
+        if (nuevoEstado === 'Entregado') {
+            const totalPedido = pedido.productos.reduce((total, producto) => total + producto.cantidad * producto.productoId.precio, 0);
+            const comision = totalPedido * 0.03; // Calcular el 3%
+
+            // Crear y guardar la comisión
+            const nuevaComision = new Comision({ valor: comision });
+            await nuevaComision.save();
+        }
+
+        // Guardar el pedido actualizado
+        await pedido.save();
+
+        // Llamar a `enviarCorreosCambioEstado` con base en el estado
+        if (nuevoEstado === 'Entregado') {
+            await enviarCorreosCambioEstado(pedido, nuevoEstado);
+        }
+
+        res.status(200).json({ message: 'Estado del pedido actualizado con éxito', pedido });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al actualizar el estado del pedido', error });
+    }
+};
+
+exports.obtenerComisiones = async (req, res) => {
+    try {
+        const comisiones = await Comision.find().sort({ fecha: -1 }); // Ordenar por fecha descendente
+        res.status(200).json(comisiones);
+    } catch (error) {
+        console.error('Error al obtener las comisiones:', error);
+        res.status(500).json({ message: 'Error al obtener las comisiones', error });
     }
 };

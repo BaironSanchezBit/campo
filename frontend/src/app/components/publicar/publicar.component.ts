@@ -22,13 +22,12 @@ export class PublicarComponent implements OnInit, AfterViewChecked {
   productDescription = '';
   productType = '';
   photos: File[] = [];
-  ciudades: any[] = [];
   ciudadSeleccionada: string = '';
-  cantidadDisponible: number = 1;
+  cantidadDisponible: number = 0;
   estadoProducto: string = 'disponible';
   usuario: any = null;  // Variable para almacenar los datos del usuario
 
-  constructor(private ciudadesService: CiudadesService, private productService: ProductService, private cdr: ChangeDetectorRef, private zone: NgZone) { }
+  constructor(private productService: ProductService, private cdr: ChangeDetectorRef, private zone: NgZone) { }
 
   ngOnInit(): void {
     // Recuperar el usuario desde localStorage
@@ -36,14 +35,6 @@ export class PublicarComponent implements OnInit, AfterViewChecked {
     if (usuarioGuardado) {
       this.usuario = JSON.parse(usuarioGuardado);  // Asignar el usuario
     }
-
-    this.ciudadesService.getCiudades().subscribe(
-      (data) => {
-        this.ciudades = data;
-      },
-      (error) => {
-      }
-    );
   }
 
   // Incrementar cantidad

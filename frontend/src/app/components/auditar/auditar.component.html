@@ -1,0 +1,56 @@
+<app-navbar></app-navbar>
+
+<div class="container mx-auto mt-10">
+    <h1 class="text-xl font-bold text-gray-800 mb-6">Gestión de Vendedores</h1>
+
+    <!-- Input de búsqueda -->
+    <div class="mb-4">
+        <label for="buscar" class="block text-sm font-medium text-gray-700">Buscar Usuario:</label>
+        <input id="buscar" type="text" placeholder="Buscar por nombre o correo" [(ngModel)]="terminoBusqueda"
+            (input)="filtrarVendedores()"
+            class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+    </div>
+
+    <!-- Lista de vendedores -->
+    <div *ngIf="vendedoresFiltrados.length > 0; else noData" class="grid grid-cols-1 gap-6">
+        <div *ngFor="let vendedor of vendedoresFiltrados"
+            class="p-6 bg-white shadow rounded-md flex flex-col space-y-4">
+            <div>
+                <h2 class="text-lg font-semibold">{{ vendedor.nombres }} {{ vendedor.apellidos }}</h2>
+                <p class="text-sm text-gray-600">Correo: {{ vendedor.correo }}</p>
+                <p class="text-sm text-gray-600">Estado: <strong>{{ vendedor.estado }}</strong></p>
+            </div>
+
+            <div>
+                <p class="text-sm text-gray-600">Ubicación de la finca: {{ vendedor.ubicacionFinca }}</p>
+                <p class="text-sm text-gray-600">Nombre de la finca: {{ vendedor.nombreFinca }}</p>
+                <p class="text-sm text-gray-600">Hectáreas de producción: {{ vendedor.hectareasProduccion }}</p>
+            </div>
+
+            <div>
+                <p class="text-sm text-gray-600">
+                    Documento de verificación:
+                    <a [href]="getDocumentoUrl(vendedor.documentoVerificacion)" target="_blank"
+                        class="text-blue-500 underline">Ver documento</a>
+                </p>
+            </div>
+
+            <div class="flex space-x-4">
+                <button (click)="aprobarVendedor(vendedor._id)"
+                    class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-500">
+                    Aprobar
+                </button>
+                <button (click)="rechazarVendedor(vendedor._id)"
+                    class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500">
+                    Rechazar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #noData>
+        <p class="text-gray-600">No hay vendedores pendientes de verificación.</p>
+    </ng-template>
+</div>
+
+<app-footer></app-footer>

@@ -49,7 +49,8 @@
                             </li>
                             <li>
                                 <a (click)="navigateToCategory('Tubérculos y Raíces')"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Tubérculos y Raíces</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Tubérculos
+                                    y Raíces</a>
                             </li>
                             <li>
                                 <a (click)="navigateToCategory('Granos y Cereales')"
@@ -67,7 +68,8 @@
                             </li>
                             <li>
                                 <a (click)="navigateToCategory('Frutas de Temporada')"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Frutas de Temporada</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Frutas
+                                    de Temporada</a>
                             </li>
                             <li>
                                 <a (click)="navigateToCategory('Hortalizas')"
@@ -75,11 +77,13 @@
                             </li>
                             <li>
                                 <a (click)="navigateToCategory('Plátano y Banano')"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Plátano y Banano</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Plátano
+                                    y Banano</a>
                             </li>
                             <li>
                                 <a (click)="navigateToCategory('Frutos Exóticos')"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Frutos exóticos</a>
+                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Frutos
+                                    exóticos</a>
                             </li>
                         </ul>
                     </div>
@@ -108,9 +112,21 @@
                         class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Ver
                         publicaciones</a>
                 </li>
+                <li *ngIf="usuario?.rol === 'vendedor'">
+                    <a routerLink="/mis-estadisticas" routerLinkActive="active"
+                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"><i
+                            class="fa-solid fa-chart-line"></i> Ver
+                        estadísticas</a>
+                </li>
+                <li *ngIf="usuario?.rol === 'auditor'">
+                    <a routerLink="/auditar" routerLinkActive="active"
+                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"><i
+                            class="fa-solid fa-file-circle-check"></i> Auditar campos</a>
+                </li>
                 <li *ngIf="usuario?.rol === 'calidad'">
                     <a routerLink="/calidad" routerLinkActive="active"
-                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Gestionar productos</a>
+                        class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Gestionar
+                        productos</a>
                 </li>
                 <ng-container *ngIf="!isLoggedIn">
                     <li class="iniciar">
@@ -258,9 +274,10 @@
                     <div>
                         <label for="password"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Contraseña:</label>
-                        <input type="password" name="password" id="password" [(ngModel)]="register.contrasena"
+                        <input type="password" name="password" id="password" [(ngModel)]="register.contrasena" (input)="verificarContrasena()"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                             required />
+                        <p *ngIf="passwordError" class="text-sm text-red-600 mt-1">{{ passwordError }}</p>
                     </div>
                     <div class="flex items-center">
                         <button id="dropdown-phone-button" data-dropdown-toggle="dropdown-phone"
@@ -339,6 +356,21 @@
                             Acepto los <a href="/terminos-condiciones" target="_blank"
                                 class="text-blue-600 hover:underline dark:text-blue-500">Términos y Condiciones</a>
                         </label>
+                    </div>
+                    <div class="flex items-start">
+                        <input type="checkbox" id="acceptContracts" [(ngModel)]="acceptContracts" name="acceptContracts"
+                            required
+                            class="w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600" />
+                        <label for="acceptContracts" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                            Acepto los <a *ngIf="register.rol === 'comprador'" routerLink="/contrato-comprador"
+                                target="_blank" class="text-blue-600 hover:underline dark:text-blue-500">Términos de
+                                Comprador</a>
+                            <a *ngIf="register.rol === 'vendedor'" routerLink="/contrato-vendedor" target="_blank"
+                                class="text-blue-600 hover:underline dark:text-blue-500">Términos de Vendedor</a>.
+                        </label>
+                    </div>
+                    <div *ngIf="!acceptContracts && showContractsError" class="text-red-600 text-sm mt-1">
+                        Debes aceptar el contrato para registrarte.
                     </div>
                     <div *ngIf="!acceptTerms && showTermsError" class="text-red-600 text-sm mt-1">
                         Debes aceptar los Términos y Condiciones para registrarte.
@@ -436,6 +468,7 @@
                                                         [(ngModel)]="producto.cantidad" [value]="producto.cantidad">
                                                     <button (click)="incrementQuantity(i)"
                                                         class="bg-gray-100 border border-gray-300 p-2 rounded-r-lg">+</button>
+                                                    <span class="pl-2">kg</span>
                                                 </div>
 
                                                 <div class="flex flex-1 items-end justify-between text-sm mt-2">

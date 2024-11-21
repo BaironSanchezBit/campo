@@ -43,8 +43,10 @@ export class MercadoComponent implements OnInit {
 
   obtenerProductos() {
     this.http.get('https://arribaelcampo.store/api/productos').subscribe((data: any) => {
-      // Solo obtener productos disponibles
-      this.productos = data.filter((producto: any) => producto.estado === 'disponible');
+      // Filtrar productos disponibles y aprobados
+      this.productos = data.filter((producto: any) => 
+        producto.estado === 'disponible' && producto.estadoCalidad === 'aprobado'
+      );
       this.filtrarProductos(); // Aplicar filtro después de cargar los productos
     }, error => {
       console.error('Error al obtener productos:', error);

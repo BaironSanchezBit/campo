@@ -101,7 +101,7 @@ exports.procesarPago = async (req, res) => {
         }
 
         // Generar el PDF del comprobante
-        const pdfPath = `./comprobante_pedido_${Date.now()}_${Math.random().toString(36).substring(7)}.pdf`;
+        const pdfPath = `/tmp/comprobante_pedido_${Date.now()}_${Math.random().toString(36).substring(7)}.pdf`;
         const doc = new PDFDocument({ margin: 40 }); // Definir márgenes del documento
 
         // Conectar el documento PDF al sistema de archivos para su almacenamiento temporal

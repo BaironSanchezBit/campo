@@ -1,0 +1,47 @@
+.fa-star,
+.fa-star-half-alt {
+  font-size: 2rem;
+  color: #fbbf24;
+}
+
+.text-yellow-500 {
+  color: #fbbf24;
+}
+
+.text-gray-300 {
+  color: #d1d5db;
+}
+
+input:disabled {
+  background: #e7e7e7;
+  color: #7a7a7a;
+}
+
+.aprobado {
+  background-color: #018d14;
+  color: #ffffff;
+  padding: 5px 10px;
+  font-size: 0.9em;
+  border-radius: 5px;
+}
+
+.rechazado {
+  background-color: #bd0000;
+  color: #ffffff;
+  padding: 5px 10px;
+  font-size: 0.9em;
+  border-radius: 5px;
+}
+
+.verificando {
+  background-color: #ff9900;
+  color: #ffffff;
+  padding: 5px 10px;
+  font-size: 0.9em;
+  border-radius: 5px;
+}
+
+.fa-file {
+  font-size: 1.5rem;
+  color: #6b7280;
+}

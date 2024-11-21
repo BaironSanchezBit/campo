@@ -20,7 +20,7 @@
             <p class="text-gray-600">Publicado por: {{ producto.usuarioId.nombres }} {{ producto.usuarioId.apellidos }}
             </p>
             <p class="text-gray-600 mb-4">Ciudad: {{ producto.ciudad }}</p>
-            <p class="text-3xl font-bold mb-4">{{ transform(producto.precio) }}</p>
+            <p class="text-3xl font-bold mb-4">{{ transform(producto.precio) }} x kg</p>
             <button (click)="addToCart(producto)"
                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 Agregar al Carrito
