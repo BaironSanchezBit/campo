@@ -316,13 +316,15 @@ exports.obtenerPedidosPorTransportador = async (req, res) => {
     }
 };
 
-
 exports.actualizarEstadoGeneralPedido = async (req, res) => {
     const { pedidoId, nuevoEstado } = req.body;
 
     try {
         // Buscar el pedido por su ID
-        const pedido = await Pedido.findOne({ pedidoId }).populate('productos.productoId').populate('productos.vendedorId');
+        const pedido = await Pedido.findOne({ pedidoId })
+            .populate('productos.productoId')
+            .populate('productos.vendedorId')
+            .populate('compradorId');
         if (!pedido) {
             return res.status(404).json({ message: 'Pedido no encontrado' });
         }
@@ -334,9 +336,71 @@ exports.actualizarEstadoGeneralPedido = async (req, res) => {
         // Guardar el pedido actualizado
         await pedido.save();
 
-        // Enviar correos si el estado es "Camino a tu dirección" o "Entregado"
-        if (['Camino a tu dirección', 'Entregado'].includes(nuevoEstado)) {
-            await enviarCorreosCambioEstado(pedido, nuevoEstado);
+        // Si el estado es "Entregado", enviar correos a todos
+        if (nuevoEstado === 'Entregado') {
+            // Enviar correo al comprador
+            const comprador = pedido.compradorId;
+            const vendedoresIds = pedido.productos.map(prod => prod.vendedorId._id.toString());
+            const calificarVendedoresLinks = vendedoresIds
+                .map(id => `<a href="http://localhost:4200/calificar/${id}">Calificar vendedor</a>`)
+                .join('<br>');
+
+            const compradorMailOptions = {
+                from: 'no.reply.arribaelcampo@gmail.com',
+                to: comprador.correo,
+                subject: `Tu pedido ha sido entregado - Arriba el Campo`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+                        <h2 style="color: #27ae60; text-align: center;">Tu pedido ha sido entregado</h2>
+                        <p>Gracias por confiar en nosotros. Tu pedido con ID <strong>${pedido.pedidoId}</strong> ha sido entregado exitosamente.</p>
+                        <p>Por favor, califica a los vendedores:</p>
+                        ${calificarVendedoresLinks}
+                        <p style="font-size: 14px; color: #aaaaaa; text-align: center;">Arriba el Campo - Promoviendo la agricultura local</p>
+                    </div>
+                `
+            };
+            await sendMail(compradorMailOptions);
+
+            // Agrupar productos por vendedor para enviar correos individuales
+            const productosPorVendedor = pedido.productos.reduce((acc, producto) => {
+                const vendedorId = producto.vendedorId._id.toString();
+                if (!acc[vendedorId]) {
+                    acc[vendedorId] = {
+                        email: producto.vendedorId.correo,
+                        nombre: producto.vendedorId.nombres,
+                        productos: []
+                    };
+                }
+                acc[vendedorId].productos.push(producto);
+                return acc;
+            }, {});
+
+            // Enviar correos a cada vendedor
+            const vendorMailPromises = Object.entries(productosPorVendedor).map(([vendedorId, vendedor]) => {
+                const productosDetalles = vendedor.productos
+                    .map(prod => `<li>${prod.productoId.titulo} - ${prod.cantidad} unidades</li>`)
+                    .join('');
+                const calificarCompradorLink = `<a href="http://localhost:4200/calificar/${comprador._id}">Calificar comprador</a>`;
+
+                const vendorMailOptions = {
+                    from: 'no.reply.arribaelcampo@gmail.com',
+                    to: vendedor.email,
+                    subject: `Pedido entregado - Arriba el Campo`,
+                    html: `
+                        <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+                            <h2 style="color: #27ae60; text-align: center;">Pedido entregado</h2>
+                            <p>El pedido con ID <strong>${pedido.pedidoId}</strong> ha sido entregado exitosamente. Aquí están los detalles de tus productos vendidos:</p>
+                            <ul>${productosDetalles}</ul>
+                            <p>Por favor, califica al comprador:</p>
+                            ${calificarCompradorLink}
+                            <p style="font-size: 14px; color: #aaaaaa; text-align: center;">Arriba el Campo - Promoviendo la agricultura local</p>
+                        </div>
+                    `
+                };
+                return sendMail(vendorMailOptions);
+            });
+
+            await Promise.all(vendorMailPromises);
         }
 
         res.status(200).json({ message: 'Estado del pedido actualizado con éxito', pedido });
