@@ -185,6 +185,25 @@
                             {{ producto.estado }}
                         </span>
                     </p>
+                    <!-- Estado con estilo Flowbite -->
+                    <p class="text-sm mt-2">
+                        Estado de Calidad:
+                        <span [class.bg-green-100]="producto.estadoCalidad === 'aprobado'"
+                            [class.text-green-800]="producto.estadoCalidad === 'aprobado'"
+                            [class.dark\\:bg-green-900]="producto.estadoCalidad === 'aprobado'"
+                            [class.dark\\:text-green-300]="producto.estadoCalidad === 'aprobado'"
+                            [class.bg-red-100]="producto.estadoCalidad === 'rechazado'"
+                            [class.text-red-800]="producto.estadoCalidad === 'rechazado'"
+                            [class.dark\\:bg-red-900]="producto.estadoCalidad === 'rechazado'"
+                            [class.dark\\:text-red-300]="producto.estadoCalidad === 'rechazado'"
+                            [class.bg-yellow-100]="producto.estadoCalidad === 'pendiente'"
+                            [class.text-yellow-800]="producto.estadoCalidad === 'pendiente'"
+                            [class.dark\\:bg-yellow-900]="producto.estadoCalidad === 'pendiente'"
+                            [class.dark\\:text-yellow-300]="producto.estadoCalidad === 'pendiente'"
+                            class="text-sm font-medium px-2.5 py-0.5 rounded">
+                            {{ producto.estadoCalidad }}
+                        </span>
+                    </p>
                 </div>
 
                 <!-- Botones de Editar y Eliminar -->

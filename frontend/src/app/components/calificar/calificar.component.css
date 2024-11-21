@@ -1,0 +1,9 @@
+.fa-star {
+    font-size: 2rem;
+    transition: color 0.3s ease;
+}
+
+textarea::placeholder {
+    color: #9ca3af;
+    /* Texto gris para el placeholder */
+}

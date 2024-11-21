@@ -1,5 +1,5 @@
 const express = require('express');
-const { registrarUsuario, iniciarSesion, confirmarCuenta, obtenerUsuarios, crearUsuario, actualizarUsuario, actualizarUsuarioPerfil, eliminarUsuario, solicitarRecuperacionContrasena, resetPassword } = require('./auth.controller');
+const { registrarUsuario, iniciarSesion, confirmarCuenta, obtenerUsuarios, crearUsuario, obtenerUsuarioConCalificaciones, actualizarUsuario, actualizarUsuarioPerfil, eliminarUsuario, solicitarRecuperacionContrasena, resetPassword } = require('./auth.controller');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
@@ -13,6 +13,7 @@ router.put('/usuarioPerfil/:id', autenticarToken, actualizarUsuarioPerfil);
 router.delete('/usuario/:id', autenticarToken, verificarAdmin, eliminarUsuario);
 router.post('/solicitar-recuperacion', solicitarRecuperacionContrasena);
 router.post('/reset-password', resetPassword);
+router.get('/usuario/:id/calificaciones', obtenerUsuarioConCalificaciones);
 
 
 function autenticarToken(req, res, next) {

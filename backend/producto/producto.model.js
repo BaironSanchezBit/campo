@@ -11,6 +11,12 @@ const productSchema = new Schema({
     fotos: [{ type: String }],
     estado: { type: String, enum: ['disponible', 'agotado', 'proximamente'], default: 'disponible' },
     fechaPublicacion: { type: Date, default: Date.now },
+    estadoCalidad: {
+        type: String,
+        enum: ['pendiente', 'aprobado', 'rechazado'],
+        default: 'pendiente'
+    },
+    razonRechazo: { type: String, default: null },
     usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true }
 });
 

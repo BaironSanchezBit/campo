@@ -4,6 +4,7 @@ const authRoutes = require('./auth/auth.routers');
 const productRoutes = require('./producto/producto.routers');
 const paymentRoutes = require('./payment/payment.routers');
 const pedidosRoutes = require('./pedido/pedido.routers');
+const calificarRoutes = require('./calificaciones/calificaciones.routers')
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -29,6 +30,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/productos', productRoutes);
 app.use('/api/pagos', paymentRoutes);
 app.use('/api/pedido', pedidosRoutes);
+app.use('/api/calificar', calificarRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

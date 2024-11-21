@@ -1,0 +1,61 @@
+<div class="container mx-auto mt-10 max-w-md bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Califica a tu vendedor/comprador</h2>
+
+    <div class="text-center mb-6">
+        <p class="text-lg text-gray-600">Selecciona una puntuación:</p>
+        <div class="flex justify-center space-x-2 mt-4">
+            <i *ngFor="let star of [1, 2, 3, 4, 5]; let i = index" class="fa-star cursor-pointer" [ngClass]="{
+            'fa': true,
+            'fas': puntuacion > i, 
+            'far': puntuacion <= i,
+            'text-yellow-500': puntuacion > i, 
+            'text-gray-400': puntuacion <= i
+          }" (mouseover)="puntuacion = i + 1" (mouseleave)="puntuacion = puntuacionSeleccionada"
+                (click)="puntuacionSeleccionada = puntuacion" aria-hidden="true">
+            </i>
+        </div>
+    </div>
+
+    <div class="mb-6">
+        <label for="comentario" class="block text-gray-700 font-medium mb-2">Deja un comentario (opcional):</label>
+        <textarea id="comentario" [(ngModel)]="comentario" rows="4" placeholder="Escribe tu comentario aquí..."
+            class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      </textarea>
+    </div>
+
+    <button (click)="enviarCalificacion()"
+        class="w-full bg-green-500 text-white font-bold py-3 rounded-lg hover:bg-green-600 transition duration-300">
+        Enviar Calificación
+    </button>
+</div>
+
+<div class="container mx-auto mt-10 max-w-md bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Detalles del Usuario</h2>
+
+    <!-- Información del usuario -->
+    <div *ngIf="usuario" class="text-center mb-6">
+        <p class="text-lg font-bold text-gray-700">{{ usuario.nombres }} {{ usuario.apellidos }}</p>
+        <p class="text-sm text-gray-500">{{ usuario.correo }}</p>
+        <p class="mt-2 text-yellow-500">
+            <i class="fas fa-star" *ngFor="let star of [1, 2, 3, 4, 5]" [ngClass]="{
+          'text-yellow-500': calificacionPromedio >= star,
+          'text-gray-300': calificacionPromedio < star
+        }" aria-hidden="true"></i>
+        </p>
+        <p class="text-gray-600">Calificación promedio: {{ calificacionPromedio | number: '1.1-1' }}</p>
+    </div>
+
+    <!-- Lista de calificaciones -->
+    <div *ngIf="calificaciones.length > 0">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Calificaciones:</h3>
+        <div *ngFor="let calificacion of calificaciones" class="mb-4 border-b pb-4">
+            <p class="text-sm text-gray-600"><strong>Puntuación:</strong> {{ calificacion.puntuacion }}</p>
+            <p class="text-sm text-gray-600"><strong>Comentario:</strong> {{ calificacion.comentario || 'Sin comentario'
+                }}</p>
+        </div>
+    </div>
+
+    <div *ngIf="calificaciones.length === 0" class="text-center text-gray-500">
+        <p>Este usuario aún no tiene calificaciones.</p>
+    </div>
+</div>

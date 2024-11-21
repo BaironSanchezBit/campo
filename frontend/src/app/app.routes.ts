@@ -21,6 +21,8 @@ import { ConfirmacionCuentaComponent } from './components/confirmacion-cuenta/co
 import { AdminComponent } from './components/admin/admin.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ProductoDetalleComponent } from './components/producto-detalle/producto-detalle.component';
+import { CalidadComponent } from './components/calidad/calidad.component';
+import { CalificarComponent } from './components/calificar/calificar.component';
 
 export const routes: Routes = [
     { path: '', component: InicioComponent },
@@ -45,5 +47,7 @@ export const routes: Routes = [
     { path: 'admin', component: AdminComponent },
     { path: 'reset-password/:token', component: ResetPasswordComponent },
     { path: 'producto/:id', component: ProductoDetalleComponent },
+    { path: 'calidad', component: CalidadComponent },
+    { path: 'calificar/:id', component: CalificarComponent },
     { path: '', redirectTo: '', pathMatch: 'full' }
 ];

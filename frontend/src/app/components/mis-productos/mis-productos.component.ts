@@ -173,7 +173,7 @@ export class MisProductosComponent implements OnInit {
 
   // Método auxiliar para obtener la URL de la foto
   getFotoUrl(foto: string): string {
-    return `https://arribaelcampo.store/uploads/${foto}`;  // Asegúrate de usar la URL correcta del servidor
+    return `http://localhost:4000/uploads/${foto}`;  // Asegúrate de usar la URL correcta del servidor
   }
 
   onDelete(producto: any): void {

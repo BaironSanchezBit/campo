@@ -3,6 +3,7 @@ const Usuario = require('./auth.model');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
+const Calificacion = require('../calificaciones/calificaciones.model'); // Importar el modelo de calificaciones
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -332,5 +333,35 @@ exports.resetPassword = async (req, res) => {
         }
         console.error(error);
         res.status(500).json({ msg: 'Error al restablecer la contraseña' });
+    }
+};
+
+exports.obtenerUsuarioConCalificaciones = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Buscar usuario
+        const usuario = await Usuario.findById(id, '-contrasena');
+        if (!usuario) {
+            return res.status(404).json({ msg: 'Usuario no encontrado' });
+        }
+
+        // Buscar calificaciones asociadas al usuario
+        const calificaciones = await Calificacion.find({ evaluadoId: id });
+
+        // Calcular la calificación promedio
+        const promedio =
+            calificaciones.length > 0
+                ? calificaciones.reduce((sum, cal) => sum + cal.puntuacion, 0) / calificaciones.length
+                : 0;
+
+        res.json({
+            usuario,
+            calificaciones,
+            promedio: promedio.toFixed(2) // Limitar a 2 decimales
+        });
+    } catch (error) {
+        console.error('Error al obtener usuario y calificaciones:', error);
+        res.status(500).json({ msg: 'Error en el servidor' });
     }
 };
