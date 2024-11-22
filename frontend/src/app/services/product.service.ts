@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class ProductService {
 
-  private apiUrl = 'http://localhost:4000/api/productos';
+  private apiUrl = 'https://arribaelcampo.store/api/productos';
 
   constructor(private http: HttpClient) { }
 

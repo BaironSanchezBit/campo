@@ -123,8 +123,8 @@
             </div>
         </div>
 
-        <div  *ngIf="usuario.estado === 'Para Verificar' && usuario.estado === 'Aprobado'" class="sm:col-span-6 mt-8 flex items-center justify-end gap-x-4">
-            <button type="button" (click)="actualizarVendedor()" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500
+        <div class="sm:col-span-6 mt-8 flex items-center justify-end gap-x-4">
+            <button type="button" [disabled]="usuario.estado !== 'Pendiente' && usuario.estado === 'Aprobado' || usuario.estado === 'Para Verificar'" (click)="actualizarVendedor()" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500
                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
                 Enviar
             </button>
